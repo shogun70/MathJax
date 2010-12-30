@@ -23,7 +23,9 @@
  *  limitations under the License.
  */
 
-(function (MML,AJAX,HUB,HTMLCSS) {
+
+(function (AJAX,HUB,HTMLCSS) {
+  var MML;
    
   var FONTTEST = MathJax.Object.Subclass({
     timeout:  5*1000,   // timeout for loading web fonts
@@ -179,7 +181,6 @@
   });
 
   HTMLCSS.Augment({
-
     config: {
       useOldImageData: true, // for now
 
@@ -1138,6 +1139,10 @@
     rfuzz: 0         // adjustment to rule placements in roots
   });
 
+MathJax.Hub.Register.StartupHook("mml Jax Ready",function () {
+
+  MML = MathJax.ElementJax.mml;
+
   MML.mbase.Augment({
     toHTML: function (span) {
       var split = this.HTMLlineBreaks();
@@ -2053,10 +2058,10 @@
         node.style.textAlign = values.indentalign;
         if (values.indentshiftfirst !== MML.INDENTSHIFT.INDENTSHIFT) {values.indentshift = values.indentshiftfirst}
         if (values.indentshift === "auto") {values.indentshift = this.displayIndent}
-	if (values.indentshift && values.indentalign !== MML.INDENTALIGN.CENTER) {
-	  span.style[{left:"marginLeft",right:"marginRight"}[values.indentalign]] =
-	    HTMLCSS.Em(HTMLCSS.length2em(values.indentshift));
-	}
+        if (values.indentshift && values.indentalign !== MML.INDENTALIGN.CENTER) {
+          span.style[{left:"marginLeft",right:"marginRight"}[values.indentalign]] =
+            HTMLCSS.Em(HTMLCSS.length2em(values.indentshift));
+        }
       }
       nobr.style.visibility = "";
       return span;
@@ -2082,6 +2087,15 @@
       return span;
     }
   });
+  
+  //
+  //  Loading isn't complete until the element jax is modified,
+  //  but can't call loadComplete within the callback for "mml Jax Ready"
+  //  (it would call HTMLCSS's Require routine, asking for the mml jax again)
+  //  so wait until after the mml jax has finished processing.
+  //
+  setTimeout(MathJax.Callback(["loadComplete",HTMLCSS,"jax.js"]),0);
+});
 
   //
   //  Handle browser-specific setup
@@ -2207,7 +2221,5 @@
   
   if (HUB.config.menuSettings.zoom !== "None")
     {AJAX.Require("[MathJax]/extensions/MathZoom.js")}
-
-  HTMLCSS.loadComplete("jax.js");
-  
-})(MathJax.ElementJax.mml, MathJax.Ajax, MathJax.Hub, MathJax.OutputJax["HTML-CSS"]);
+    
+})(MathJax.Ajax, MathJax.Hub, MathJax.OutputJax["HTML-CSS"]);

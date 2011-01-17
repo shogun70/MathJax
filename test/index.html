@@ -41,7 +41,7 @@ th, td {
 	border: 1px solid #aaa;
 	padding: 0.2em;
 }
-code {
+blockquote.code {
 	border: 1px solid #aaa;
 	background-color: #ccc;
 }
@@ -55,7 +55,7 @@ and identify issues with the installation or configuration in a problem page. </
 
 <dl>
 	<li>
-		<dt><a href="test.html">test.html</a></dt>
+		<dt><a href="install.html">install.html</a></dt>
 		<dd>A basic MathJax enabled page.
 		Use this to confirm that MathJax has been installed correctly, together with standard MathJax web-fonts. <br />
 		This page should be checked in at least Internet Explorer, Firefox (or Safari) and Chrome,
@@ -63,25 +63,39 @@ and identify issues with the installation or configuration in a problem page. </
 		</dd>
 	</li>
 	<li>
-		<dt><a href="test-images.html">test-images.html</a></dt>
+		<dt><a href="install-images.html">install-images.html</a></dt>
 		<dd>A basic MathJax enabled page that uses image-fonts.
 		Image-fonts are the fallback option provided by MathJax for browsers that don't support web-fonts. 
 		Use this to confirm that the image-fonts have been installed correctly. 
 		</dd>
 	</li>
 	<li>
-		<dt><a href="checklist.html">checklist.html</a></dt>
+		<dt><a href="install-diag.html">install-diag.html</a></dt>
 		<dd>Checks a cross-section of MathJax files highlighting success (or failure) and performance issues. <br />
 		This can give an indication of why a MathJax installation seems to fail or be slow. </dd>
 	</li>
 </dl>
 
-<p>Also, here is the code for a javascript bookmarklet which creates a diagnostics window for a web-page.
-This code requires the MathJaxToolsDir to be configured and to be in the same domain as the page under test.
-</p>
-<blockquote><code>
-var MathJaxToolsDir = "/mathjax/tools"; var script = document.createElement("script"); script.src = MathJaxToolsDir + "/diagnostix.js"; document.getElementsByTagName("head")[0].appendChild(script); void(0);
-</code></blockquote>
+<p>Additionally, the following pages can perform simple diagnostics and performance analysis of a MathJax enabled page. <br >
+These require the page under test to be in the same domain as the MathJax installation. </p>
+
+<dl>
+	<li>
+		<dt><a href="page-diag.html">page-diag.html</a></dt>
+		<dd>Provides a few basic checks of a MathJax enabled page. <br />
+		Also takes a comprehensive snapshot of browser, window and MathJax configuration
+		which may be posted to a support group for analysis. </dd>
+	</li>
+	<li>
+		<dt><a href="page-perf.html">page-perf.html</a></dt>
+		<dd>Provides basic timing charts for a MathJax enabled page. <br />
+		This can give an indication of where a page seems to fail or be slow. </dd>
+	</li>
+</dl>
+
+<p>If the MathJax distribution is not in the same domain as the page under test you can download 
+a zip archive - <a href="page-test.zip">page-test.zip</a> - containing the required files.
+This archive can be unpacked in a location where it will be in the same domain as the page. </p>
 
 <p>There are also several sample pages that demonstrate how to configure and / or program with MathJax. </p>
 

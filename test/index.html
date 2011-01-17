@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<title>MathJax Test Directory</title>
+<!-- Copyright (c) 2010 Design Science, Inc. -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<style>
+body {
+	background-color: #fff;
+}
+h1 {
+	font-size: 20pt;
+}
+label {
+	background-color: #ccc;
+	border: 2px solid #aaa;
+	display: inline-block;
+	margin: 0.2em; margin-left: 0;
+	padding: 0.2em;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+table {
+	border-collapse: collapse;
+	width: 100%;
+	border: 1px solid #aaa;
+	table-layout: fixed;
+	margin: 0.2em; margin-left: 0;
+}
+caption {
+	width: auto;
+	background-color: #ccc;
+	border: 2px solid #aaa;
+	padding: 0.2em;
+	border-radius: 4px 4px 0 0;
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+}
+th, td {
+	border: 1px solid #aaa;
+	padding: 0.2em;
+}
+code {
+	border: 1px solid #aaa;
+	background-color: #ccc;
+}
+</style>
+</head>
+<body>
+<h1>MathJax Test and Sample pages</h1>
+<p>Thankyou for installing MathJax - "Beautiful math in all browsers".
+The following pages can help confirm that MathJax is installed correctly,
+and identify issues with the installation or configuration in a problem page. </p>
+
+<dl>
+	<li>
+		<dt><a href="test.html">test.html</a></dt>
+		<dd>A basic MathJax enabled page.
+		Use this to confirm that MathJax has been installed correctly, together with standard MathJax web-fonts. <br />
+		This page should be checked in at least Internet Explorer, Firefox (or Safari) and Chrome,
+		because different web-font formats are supported by the different browsers. 
+		</dd>
+	</li>
+	<li>
+		<dt><a href="test-images.html">test-images.html</a></dt>
+		<dd>A basic MathJax enabled page that uses image-fonts.
+		Image-fonts are the fallback option provided by MathJax for browsers that don't support web-fonts. 
+		Use this to confirm that the image-fonts have been installed correctly. 
+		</dd>
+	</li>
+	<li>
+		<dt><a href="checklist.html">checklist.html</a></dt>
+		<dd>Checks a cross-section of MathJax files highlighting success (or failure) and performance issues. <br />
+		This can give an indication of why a MathJax installation seems to fail or be slow. </dd>
+	</li>
+</dl>
+
+<p>Also, here is the code for a javascript bookmarklet which creates a diagnostics window for a web-page.
+This code requires the MathJaxToolsDir to be configured and to be in the same domain as the page under test.
+</p>
+<blockquote><code>
+var MathJaxToolsDir = "/mathjax/tools"; var script = document.createElement("script"); script.src = MathJaxToolsDir + "/diagnostix.js"; document.getElementsByTagName("head")[0].appendChild(script); void(0);
+</code></blockquote>
+
+<p>There are also several sample pages that demonstrate how to configure and / or program with MathJax. </p>
+
+<dl>
+	<li>
+		<dt><a href="sample.html">sample.html</a></dt>
+		<dd>A page containing math in TeX format</dd>
+	</li>
+	<li>
+		<dt><a href="sample-tex.html">sample-tex.html</a></dt>
+		<dd>A basic page containing math in TeX format</dd>
+	</li>
+	<li>
+		<dt><a href="sample-mml.html">sample-mml.html</a></dt>
+		<dd>A basic page containing math in MathML format. The appearance should be the same as sample-tex.html</dd>
+	</li>
+	<li>
+		<dt><a href="sample-tex2mml.html">sample-tex2mml.html</a></dt>
+		<dd>A basic page containing math in TeX format.
+		If the browser has native support for MathML then the rendering is delegated to the browser.
+		Otherwise the appearance should be the same as sample-tex.html</dd>
+	</li>
+	<li>
+		<dt><a href="sample-signals.html">sample-signals.html</a></dt>
+		<dd>A basic page demonstrating how to use MathJax's signal mechanism to find out
+		about what MathJax is doing, and to hook into various events as they occur.</dd>
+	</li>
+	<li>
+		<dt><a href="sample-dynamic.html">sample-dynamic.html</a></dt>
+		<dd>A simple demonstraton of programming with MathJax to update math on the page
+		in response to user input. </dd>
+	</li>
+</dl>
+
+</body>
+</html>

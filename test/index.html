@@ -5,41 +5,33 @@
 <!-- Copyright (c) 2010 Design Science, Inc. -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style>
+html {
+	width: 100%;
+	text-align: center;
+	background-color: #ccc;
+}
 body {
+	width: 80ex;
+	margin: 1em auto;
+	padding: 1em;
+	text-align: left;
 	background-color: #fff;
 }
 h1 {
 	font-size: 20pt;
 }
-label {
-	background-color: #ccc;
-	border: 2px solid #aaa;
-	display: inline-block;
-	margin: 0.2em; margin-left: 0;
-	padding: 0.2em;
-	border-radius: 4px;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
+h2 {
+	border-bottom: 2px solid;
 }
-table {
-	border-collapse: collapse;
-	width: 100%;
-	border: 1px solid #aaa;
-	table-layout: fixed;
-	margin: 0.2em; margin-left: 0;
+#banner {
+	font-family: arial, sans-serif;
+	font-weight: bolder;
+	color: #aaa;
 }
-caption {
-	width: auto;
-	background-color: #ccc;
-	border: 2px solid #aaa;
-	padding: 0.2em;
-	border-radius: 4px 4px 0 0;
-	-moz-border-radius: 4px 4px 0 0;
-	-webkit-border-radius: 4px 4px 0 0;
-}
-th, td {
-	border: 1px solid #aaa;
-	padding: 0.2em;
+#banner strong {
+	vertical-align: 0.2em;
+	margin-left: 1em;
+	font-size: larger;
 }
 blockquote.code {
 	border: 1px solid #aaa;
@@ -48,8 +40,12 @@ blockquote.code {
 </style>
 </head>
 <body>
-<h1>MathJax Test and Sample pages</h1>
-<p>Thankyou for installing MathJax - "Beautiful math in all browsers".
+<div id="banner"><img src="logo.gif" title="MathJax" /> <strong>Beautiful math in all browsers</strong></div>
+<p>Thankyou for installing MathJax.
+This page lists various resources that can help test your installation and MathJax enabled pages. </p>
+
+<h2>Installation Tests</h2>
+<p>
 The following pages can help confirm that MathJax is installed correctly,
 and identify issues with the installation or configuration in a problem page. </p>
 
@@ -76,7 +72,8 @@ and identify issues with the installation or configuration in a problem page. </
 	</li>
 </dl>
 
-<p>Additionally, the following pages can perform simple diagnostics and performance analysis of a MathJax enabled page. <br >
+<h2>Page Tests</h2>
+<p>The following pages can perform simple diagnostics and performance analysis of a MathJax enabled page. <br >
 These require the page under test to be in the same domain as the MathJax installation. </p>
 
 <dl>
@@ -97,6 +94,7 @@ These require the page under test to be in the same domain as the MathJax instal
 a zip archive - <a href="page-test.zip">page-test.zip</a> - containing the required files.
 This archive can be unpacked in a location where it will be in the same domain as the page. </p>
 
+<h2>Sample Pages</h2>
 <p>There are also several sample pages that demonstrate how to configure and / or program with MathJax. </p>
 
 <dl>

@@ -12,7 +12,7 @@ checks: [
 	{
 	name: "Init",
 	title: "MathJax initialization completed",
-	test: function(context, MathJax) { return MathJax.Hub.Startup.signal.posted.indexOf("End Extensions") >= 0; }
+	test: function(context, MathJax) { return Array.indexOf(MathJax.Hub.Startup.signal.posted, "End Extensions") >= 0; } // FIXME is this correct??
 	}
 ]
 },
@@ -50,8 +50,7 @@ checks: [
 	name: "EmulateIE7",
 	title: "Emulate IE7 meta tag",
 	test: function(context, MathJax) {
-		var elts = $$("meta", context.document);
-		var meta;
+		var elts = context.document.getElementsByTagName("meta"), meta;
 		for (var n=elts.length, i=0; i<n; i++) {
 			meta = elts[i];
 			if (meta.httpEquiv === "X-UA-Compatible") break;

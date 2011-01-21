@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
-<title>MathJax Installation Checklist</title>
+<title>MathJax Installation Diagnostics</title>
 <!-- Copyright (c) 2010 Design Science, Inc. -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style>
@@ -45,10 +45,13 @@ input {	border: none; }
 input.duration { border: 1px solid #aaa; }
 input[name=waiting] { border: none; background-color: orange; color: white; text-align: center; }
 input[name=loading] { border: none; background-color: green; color: white; text-align: center; }
+
+td.error { background-color: red; }
+td.warn { background-color: yellow; }
 </style>
 </head>
 <body>
-<h1>MathJax Installation Checklist</h1>
+<h1>MathJax Installation Diagnostics</h1>
 
 <h2>Summary</h2>
 <p id="status"></p>
@@ -62,18 +65,26 @@ input[name=loading] { border: none; background-color: green; color: white; text-
 <form action="mailto:" method="post" enctype="text/plain">
 <div id="results">
 <table id="files">
-	<col style="width: 12em;" />
+	<col style="width: 20em;" />
+	<col style="width: 4em;" />
 	<col style="width: 4em;" />
 	<col style="width: 4em;" />
 	<col style="width: auto;" />
 	<thead>
-		<tr><th>File</th><th>Loaded</th><th>Gzip</th><th>Timeline</th></tr>
+		<tr>
+			<th>File</th>
+			<th title="File successfully loaded">Loaded</th>
+			<th title="Compression is enabled - a performance optimization">Gzip</th>
+			<th title="Cross-site use enabled">Cross-<br />site</th>
+			<th title="Timing data only relevant with empty cache">Timeline</th>
+		</tr>
 	</thead>
 	<tbody id="files-table">
 		<tr class="template">
-			<td align="left" style="overflow: hidden;"><input name="name" readonly size="50" /></td>
+			<td align="left" style="overflow: hidden;"><input name="name" readonly size="60" /></td>
 			<td align="center"><input type="checkbox" name="loaded" readonly /></td>
 			<td align="center"><input type="checkbox" name="gzip" readonly /></td>
+			<td align="center"><input type="checkbox" name="cross-site" readonly /></td>
 			<td align="left"><input class="duration" name="waiting" readonly /><input class="duration" name="loading" readonly /></td>
 		</tr>
 	</tbody>
@@ -201,16 +212,20 @@ var rcStats = {
 }
 var checkResource = function(res) {
 	var callback = MathJax.Callback(function(rq, t) {
+		var fname = res.name, ext = fname.split(".").pop();
 		var loaded = (rq.status == 200),
 			contentEncoding = rq.getResponseHeader("Content-Encoding"),
 			gzip = !!(loaded && /gzip|deflate/.test(contentEncoding)),
+			allowOrigin = rq.getResponseHeader("Access-Control-Allow-Origin"),
+			crossSite = !!(loaded && allowOrigin === "*"),
 			waiting = t.headers - t.start,
 			loading = t.complete - t.headers,
 			total = t.complete - t.start,
 			timelineMsg = "latency: " + waiting + " / download: " + loading + " / total: " + total;
 		Object.extend(res, {
-			loaded: loaded,
-			gzip: { value: gzip, title: contentEncoding },
+			loaded: { value: loaded, "class": !loaded ? "error" : null }, 
+			gzip: { value: gzip, title: contentEncoding, "class": (!gzip && ext !== "png") ? "warn" : null },
+			"cross-site": { value: crossSite, title: allowOrigin, "class": (!crossSite && (ext !== "js" && ext !== "png")) ? "warn" : null },
 			waiting: { value: waiting, title: timelineMsg },
 			loading: { value: loading, title: timelineMsg },
 			total: total

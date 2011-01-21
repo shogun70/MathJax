@@ -201,14 +201,18 @@ updateInput: function(input, data) {
 	if (typeof data !== "object") return this.updateInputValue(input, data);
 	this.updateInputValue(input, data.value);
 	if (data.title) input.title = data.title;
-	if (data["class"]) ClassList(input).add(data["class"]);
+	if (data["class"]) {
+		ClassList(input).add(data["class"]);
+		var td = input.parentNode;
+		if (td.tagName.toLowerCase() === "td") ClassList(td).add(data["class"]);
+	}
 },
 updateInputValue: function(input, val) {
 	switch (typeof val) {
 		case "boolean": input.checked = val; break;
 		case "number": case "string": input.value = val; break;
 	}
-	if (input.className === "duration" && typeof val === "number") input.style.width = this.scale * val +"%";
+	if (ClassList(input).contains("duration") && typeof val === "number") input.style.width = this.scale * val +"%";
 }
 
 })

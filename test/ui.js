@@ -190,7 +190,7 @@ addRow: function(data) {
 	var tBody = this.tBody, template = this.template;
 	var row = template.cloneNode(true);
 	tBody.appendChild(row);
-	var inputs = $$("input", row);
+	var inputs = row.getElementsByTagName("input");
 	var dataTable = this;
 	Array.forEach(inputs, function(input) {
 		var key = input.name, val = data[key];

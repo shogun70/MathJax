@@ -4,12 +4,30 @@
 <title>MathJax Diagnostics</title>
 <!-- Copyright (c) 2010 Design Science, Inc. -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="page-perf.css" />
 <style>
-body {
+html {
+	width: 100%;
+	overflow: hidden;
 	background-color: #fff;
 }
-h1 {
-	font-size: 20pt;
+html, body {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+#banner {
+	font-family: arial, sans-serif;
+	font-weight: bolder;
+	color: #aaa;
+}
+#banner img {
+	height: 25px;
+}
+#banner strong {
+	font-size: larger;
+	margin-left: 0.5em;
+	vertical-align: 0.1em;
 }
 label {
 	background-color: #eee;
@@ -21,21 +39,30 @@ label {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 }
+#tabs {
+	width: 100%;
+	background-color: #eee;
+	height: 1.6em;
+}
 ul.tabs {
 	list-style-position: inside;
 	list-style-type: none;
 	padding-left: 0px;
 	margin: 0px;
-	line-height: 1.4em;
+	border: 1px solid #aaa;
+	line-height: 1.5em;
 }
 ul.tabs li {
 	display: inline;
 	background-color: #eee;
-	border: 1px solid #aaa;
-	padding: 0.2em;
-	border-radius: 4px 4px 0 0;
-	-moz-border-radius: 4px 4px 0 0;
-	-webkit-border-radius: 4px 4px 0 0;
+	padding: 0.2em 0.5em;
+	line-height: inherit;
+	vertical-align: bottom;
+}
+ul.tabs li.selected {
+	background-color: #fafafa;
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #aaa;
 }
 iframe {
 	width: 100%;
@@ -67,6 +94,9 @@ th { text-align: left; }
 th, td { padding-left: 1em; padding-right: 1em; }
 input[type=text] { width: 20em; }
 
+#runbox {
+	overflow: auto;
+}
 #basic tbody {
 	border: 1px solid #ccc;
 }
@@ -103,13 +133,19 @@ mui.getOptions(function(key, val) {
 </script>
 </head>
 <body>
-<h1>MathJax Page Diagnostics</h1>
-
+<div id="banner"><img src="logo.gif" /> <strong>Page Diagnostics</strong></div>
 <form name="config">
-
-<label>Test URL <input type="text" size="40" name="url" /></label>
-
-<input type="submit" name="run" value="Run" />
+<ul id="tabs" class="tabs">
+	<li>
+		<a href="#testBox">Test Page</a>
+		<input type="text" size="40" name="url" />
+		<input type="submit" name="run" value="Run" />
+	</li>
+	<li><a href="#basicPanel" title="Basic troubleshooting checks">Basic</a></li>
+	<li><a href="#propertiesPanel" title="Complete view of document and MathJax properties">Properties</a></li>
+	<li><a href="#timelinesPanel" title="Timelines for MathJax tasks">Timelines</a></li>
+	<li><a href="#mathPanel" title="Timings for math processing">Math</a></li>
+</ul>
 </form>
 
 <script>
@@ -120,15 +156,7 @@ form["url"].value = config.url;
 
 })();
 </script>
-
-<hr />
 	
-<ul id="tabs" class="tabs">
-	<li><a href="#testBox">Test Page</a></li>
-	<li><a href="#basicPanel" title="Basic troubleshooting checks">Basic</a></li>
-	<li><a href="#advancedPanel" title="Complete view of document and MathJax properties">Advanced</a></li>
-</ul>
-
 <div id="runbox">
 
 <div id="testBox">
@@ -136,35 +164,17 @@ form["url"].value = config.url;
 </div>
 
 <div id="basicPanel">
-<table id="basic">
-	<caption>Basic troubleshooting checks</caption>
-	<col style="width: 4em;" />
-	<col />
-	<tbody class="template">
-		<tr><th style="white-space: nowrap;"></th><td></td></tr>
-		<tr><td></td><td></td></tr>
-	</tbody>
-</table>
 </div>
 
-<div id="advancedPanel">
-<form action="mailto:" method="post" enctype="text/plain">
-
-<table id="advanced">
-	<caption>Complete view of document and MathJax properties <button type="submit" title="Construct an email including these properties as content">Send email</button></caption>
-	<col />
-	<col width="10%" />
-	<col width="20%" />
-	<thead>
-		<tr><th>Property Name</th><th>Type</th><th>Value</th></tr>
-	</thead>
-	<tbody>
-		<tr class="template"><td></td><td></td><td></td></tr>
-	</tbody>
-</table>
-
-</form>
+<div id="propertiesPanel">
 </div>
+
+<div id="timelinesPanel">
+</div>
+
+<div id="mathPanel">
+</div>
+
 
 </div>
 	
@@ -172,20 +182,23 @@ form["url"].value = config.url;
 (function() {
 
 // var height = (window.innerHeight || document.documentElement.offsetHeight) - runBox.offsetTop - document.body.offsetTop;
-var height = $(window).height() - $("#runbox").offset().top; 
-$("#test").height(height * 0.95);
+var $runBox = $("#runbox");
+var height = $(window).height() - $runBox.offset().top;
+$runBox.height(height);
+
+$("#test").height(height*0.95);
 var onclick = function(e) {
 	var href = this.href;
 	var m = href.split("#");
 	if (m[0] !== document.URL) return;
-	var panel = $("#" + m[1]);
-	panel.parent().children().addClass("hidden");
-	panel.removeClass("hidden");
+	var $panel = $("#" + m[1]);
+	$panel.parent().children().addClass("hidden");
+	$panel.removeClass("hidden");
 	
 	var li = this.parentNode;
 	var ul = li.parentNode;
 	$(ul).children().removeClass("selected");
-	$(li).addClass("selected");	
+	$(li).addClass("selected");
 	return false;
 }
 
@@ -194,137 +207,41 @@ $("#tabs a").click(onclick).first().click();
 })();
 </script>
 </body>
-<script src="page-props.js"></script>
-<script src="page-checks.js"></script>
 <script>
-window.Init = function(context) {
-
-var MathJax = context.MathJax;
-
-var runChecks = function() {
-	var table = $("#basic");
-	var tBodyTemplate = table.find("tbody.template");
-	tBodyTemplate.remove().removeClass("template");
-	Array.forEach(checks, function(checkGroup) {
-		var tBody = tBodyTemplate.clone(true);
-		table.append(tBody);
-		var rows = tBody.find("tr");
-		var titleRow = rows.eq(0);
-		var template = rows.eq(1);
-		template.remove();
-		titleRow.find("th, td").first().html(checkGroup.title);
-		
-		Array.forEach(checkGroup.checks, function(check) {
-			var row = template.clone(true), cells = row.find("th, td");
-			cells.eq(1).html(check.title);
-			cells.eq(0).html('<input type="checkbox" name="check" readonly />')
-				.find("input").each(function() {
-					this.value = check.name;
-					this.checked = check.test(context, MathJax);
-				});
-			tBody.append(row);
-		})
-	});
-}
-
-
-var tBody = $("#advanced tbody");
-var template = tBody.find(".template").remove().removeClass("template");
-
-var createPropertyDisplay = function(name, sample) {
-	var type, inp = "";
-	switch (typeof sample) {
-		case "object":
-			if (sample.length != null) {
-				type = "list";
-				inp = '<input type="text" readonly />';
-			}
-			else {
-				type = "object";
-				inp = '<input type="radio" readonly />';
-			}
-			break;
-		case "boolean":
-			type = "boolean";
-			inp = '<input type="checkbox" value="true" readonly /><input type="checkbox" value="false" readonly checked style="display: none;" />';
-			break;
-		case "number":
-			type = "number";
-			inp = '<input type="text" readonly />';
-			break;
-		case "string":
-			type = "string";
-			inp = '<input type="text" readonly />';
-			break;
-	}
-	var row = template.clone(true);
-	tBody.append(row);
-	var cells = row.find("td");
-	var nameCell = cells.eq(0);
-	var typeCell = cells.eq(1);
-	var valCell = cells.eq(2);
-	nameCell.html(name);
-	typeCell.html(type);
-	valCell.html(inp);
-	valCell.find("input").attr("name", name);
-	return valCell.find("input")[0];
-}
-
-var showObject = function(object, path) {
-	Object.each(object, function(name, val) {
-		var fullName = (path) ? path + "." + name : name;
-		var prop = context;
-		Array.forEach (fullName.split("."), function(field) {
-			if (prop) prop = prop[field];
-		});
-		
-		var inpEl = createPropertyDisplay(fullName, val);
-		if (prop == null) {
-			inpEl.disabled = true;
-			inpEl.title = "NOT PRESENT";
-		}
-		switch (typeof val) {
-			case "object":
-				if (val.length != null && prop) inpEl.value = prop.join(",");
-				else {
-					inpEl.disabled = true;
-					if (prop) inpEl.checked = true;
-					showObject(val, fullName);
-				}
-				break;
-			case "boolean":
-				if (prop) {
-					inpEl.checked = true;
-					inpEl.nextSibling.checked = false;
-				}
-				break;
-			case "number":
-				if (prop) inpEl.value = prop;
-				break;
-			case "string":
-				if (prop) inpEl.value = prop;
-				break;
-		}
-	});
-}
-
-MathJax.Hub.Register.StartupHook("End", function() {	
-	runChecks();
-	showObject(settings);
-});
-
-}
+var MathJaxDx = {};
 </script>
+<script src="page-basic.js"></script>
+<script src="page-properties.js"></script>
+<script src="page-timelines.js"></script>
+<script src="page-math.js"></script>
 <script>
+
+MathJaxDx.Basic.init($("#basicPanel")[0]);
+MathJaxDx.Properties.init($("#propertiesPanel")[0]);
+MathJaxDx.Timelines.init($("#timelinesPanel")[0]);
+MathJaxDx.Math.init($("#mathPanel")[0]);
+
+var notify = function(event, context) {
+	var onEvent = "on" + event;
+	var MathJax = context.MathJax;
+	each(MathJaxDx, function(name, module) {
+		if (module[onEvent]) module[onEvent](context, MathJax);
+	});
+}
+
 if (config.run) (function() {
 
 var test = $("#test")[0], context = test.contentWindow;
+
+notify("PageStart", context);
+
+test.onload = function() { notify("PageLoad", context); }
 test.src = config.url;
 
 var poll = window.setInterval(function() {
 	if (context.MathJax) {
 		window.clearInterval(poll);
-		window.Init(context);
+		notify("MathJaxReady", context);
 	}
 }, 25)
 

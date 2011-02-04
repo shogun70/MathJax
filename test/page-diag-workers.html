@@ -1,0 +1,660 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<title>MathJax Diagnostics</title>
+<!-- Copyright (c) 2010 Design Science, Inc. -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<style>
+html {
+	width: 100%;
+	overflow: hidden;
+	background-color: #fff;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+#banner {
+	font-family: arial, sans-serif;
+	font-weight: bolder;
+	color: #aaa;
+}
+#banner img {
+	height: 25px;
+}
+#banner strong {
+	font-size: larger;
+	margin-left: 0.5em;
+	vertical-align: 0.1em;
+}
+label {
+	background-color: #eee;
+	border: 1px solid #aaa;
+	display: inline-block;
+	margin: 0.2em; margin-left: 0;
+	padding: 0.2em;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+#tabs {
+	width: 100%;
+	background-color: #eee;
+	height: 1.6em;
+}
+ul.tabs {
+	list-style-position: inside;
+	list-style-type: none;
+	padding-left: 0px;
+	margin: 0px;
+	border: 1px solid #aaa;
+	line-height: 1.5em;
+}
+ul.tabs li {
+	display: inline;
+	background-color: #eee;
+	padding: 0.2em 0.5em;
+	line-height: inherit;
+	vertical-align: bottom;
+}
+ul.tabs li.selected {
+	background-color: #fafafa;
+	border-left: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+}
+iframe {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #aaa;
+}
+table {
+	table-layout: fixed;
+	border-collapse: collapse;
+	width: 100%;
+	border: 1px solid #aaa;
+	margin: 0.2em; margin-left: 0;
+}
+caption {
+	width: auto;
+	background-color: #eee;
+	border: 1px solid #aaa;
+	padding: 0.2em;
+	-moz-border-radius: 0 4px 0 0;
+	-webkit-border-radius: 0 4px 0 0;
+	border-radius: 0 4px 0 0;
+}
+th, td {
+	border: 1px solid #aaa;
+	padding: 0.2em;
+}
+tr { border: 1px solid #aaa; }
+th { text-align: left; }
+th, td { padding-left: 1em; padding-right: 1em; }
+input[type=text] { width: 20em; }
+
+#runbox {
+	overflow: auto;
+}
+#basic tbody {
+	border: 1px solid #ccc;
+}
+#basic tr, #basic th, #basic td {
+	border: none;
+}
+.hidden {
+	position: absolute;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	height: 0px;
+	width: 100%;
+	overflow: hidden;
+	visibility: hidden;
+}
+</style>
+<script src="jquery.js"></script>
+<script src="ui.js"></script>
+<script>
+var mui = MathJaxUI,
+	extend = Object.extend, each = Object.each, forEach = Array.forEach, eachWord = String.eachWord;
+
+var MathJaxDx = {}; // namespace for diag utils
+</script>
+</head>
+<body>
+<ul id="tabs" class="tabs">
+	<li><a href="#basicPanel" title="Basic troubleshooting checks">Basic</a></li>
+	<li><a href="#propertiesPanel" title="Complete view of document and MathJax properties">Properties</a></li>
+	<li><a href="#timelinesPanel" title="Timelines for MathJax tasks">Timelines</a></li>
+	<li><a href="#mathPanel" title="Timings for math processing">Math</a></li>
+</ul>
+	
+<div id="runbox">
+
+<!-- Basic Panel -->
+
+<div id="basicPanel">
+<table id="basic">
+	<caption>Basic troubleshooting checks</caption>
+	<col style="width: 4em;" />
+	<col />
+	<tbody class="template">
+		<tr><th style="white-space: nowrap;"></th><td></td></tr>
+		<tr><td></td><td></td></tr>
+	</tbody>
+</table>
+</div>
+
+<script>
+
+MathJaxDx.Basic = (function() {	
+
+var $display = $("#basicPanel"),
+	$table = $display.find("table"),
+	$tBodyTemplate = $table.find("tbody.template");
+$tBodyTemplate.remove().removeClass("template");
+
+var runChecks = function(context, MathJax) {
+	Array.forEach(Basic.checks, function(checkGroup) {
+		var $tBody = $tBodyTemplate.clone(true);
+		$table.append($tBody);
+		var $rows = $tBody.find("tr");
+		var $titleRow = $rows.eq(0);
+		var $template = $rows.eq(1);
+		$template.remove();
+		$titleRow.find("th, td").first().html(checkGroup.title);
+		
+		Array.forEach(checkGroup.checks, function(check) {
+			var $row = $template.clone(true),
+				$cells = $row.find("th, td");
+			$cells.eq(1).html(check.title);
+			$cells.eq(0).html('<input type="checkbox" name="check" readonly />')
+				.find("input").each(function() {
+					this.value = check.name;
+					this.checked = check.test(context, MathJax);
+				});
+			$tBody.append($row);
+		});
+	});
+}
+
+var Basic = {
+	
+onMathJaxReady: function(context, MathJax) {
+	MathJax.Hub.Register.StartupHook("End", function() {	
+		runChecks(context, MathJax);
+	});	
+}
+
+}
+
+return Basic;
+})();
+</script>
+<script src="page-basic.js">/* MathJaxDx.Basic.checks = [] */</script>
+
+<!-- Properties Panel -->
+
+<div id="propertiesPanel">
+<form action="mailto:" method="post" enctype="text/plain">
+<table id="properties">
+	<caption>Document and MathJax properties <button type="submit" title="Construct an email including these properties as content">Send email</button></caption>
+	<col />
+	<col width="10%" />
+	<col width="20%" />
+	<thead>
+		<tr><th>Property Name</th><th>Type</th><th>Value</th></tr>
+	</thead>
+	<tbody>
+		<tr class="template"><td></td><td></td><td></td></tr>
+	</tbody>
+</table>
+</form>
+</div>
+
+<script>
+MathJaxDx.Properties = (function() {
+
+var context;
+
+var $display = $("#propertiesPanel"),
+	$tBody = $display.find("tbody"),
+	$template = $tBody.find(".template");
+$template.remove().removeClass("template");
+
+var createPropertyDisplay = function(name, sample) {
+	var type, inp = "";
+	switch (typeof sample) {
+		case "object":
+			if (sample.length != null) {
+				type = "list";
+				inp = '<input type="text" readonly />';
+			}
+			else {
+				type = "object";
+				inp = '<input type="radio" readonly />';
+			}
+			break;
+		case "boolean":
+			type = "boolean";
+			inp = '<input type="checkbox" value="true" readonly /><input type="checkbox" value="false" readonly checked style="display: none;" />';
+			break;
+		case "number":
+			type = "number";
+			inp = '<input type="text" readonly />';
+			break;
+		case "string":
+			type = "string";
+			inp = '<input type="text" readonly />';
+			break;
+	}
+	var $row = $template.clone(true);
+	$tBody.append($row);
+	var $cells = $row.find("td");
+	var $nameCell = $cells.eq(0);
+	var $typeCell = $cells.eq(1);
+	var $valCell = $cells.eq(2);
+	$nameCell.html(name);
+	$typeCell.html(type);
+	$valCell.html(inp);
+	$valCell.find("input").attr("name", name);
+	return $valCell.find("input")[0];
+}
+
+var showObject = function(object, path) {
+	Object.each(object, function(name, val) {
+		if (!object.hasOwnProperty(name)) return;
+		var fullName = (path) ? path + "." + name : name;
+		var prop = context;
+		Array.forEach (fullName.split("."), function(field) {
+			if (prop) prop = prop[field];
+		});
+		
+		var inpEl = createPropertyDisplay(fullName, val);
+		if (prop == null) {
+			inpEl.disabled = true;
+			inpEl.title = "NOT PRESENT";
+		}
+		switch (typeof val) {
+			case "object":
+				if (val.length != null && prop) inpEl.value = prop.join(",");
+				else {
+					inpEl.disabled = true;
+					if (prop) inpEl.checked = true;
+					showObject(val, fullName);
+				}
+				break;
+			case "boolean":
+				if (prop) {
+					inpEl.checked = true;
+					inpEl.nextSibling.checked = false;
+				}
+				break;
+			case "number":
+				if (prop) inpEl.value = prop;
+				break;
+			case "string":
+				if (prop) inpEl.value = prop;
+				break;
+		}
+	});
+}
+
+var Properties = {
+
+onMathJaxReady: function(_window, MathJax) {
+	context = _window;
+	var _this = this;
+	MathJax.Hub.Register.StartupHook("End", function() {	
+		showObject(Properties.settings);
+	});	
+}
+
+}
+
+return Properties;
+})();
+</script>
+<script src="page-properties.js">/* MathJaxDx.Properties.settings = {} */</script>
+
+<!-- Styles for timeline based panels: timelines, math -->
+<style>
+table.timeline {
+	table-layout: auto;
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid #aaa;
+	margin: 0.2em; margin-left: 0;
+}
+table.timeline caption {
+	width: auto;
+	background-color: #ccc;
+	border: 2px solid #aaa;
+	padding: 0.2em;
+	border-radius: 4px 4px 0 0;
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+}
+table.timeline thead th {
+	padding: 0;
+	width: auto;
+}
+table.timeline thead th button {
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	border-width: 1px;
+	background-color: #eee;
+}
+table.timeline tr {
+	border-top: 1px solid #eee;
+	white-space: nowrap;
+	overflow: visible;
+}
+table.timeline td {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.template {
+	display: none;
+}
+table.timeline input {
+	border: none;
+	background-color: transparent;
+}
+table.timeline input[name=type] {
+	text-align: center;
+	width: 1em;
+	height: 1em;
+	background-color: #aaa;
+	color: white;
+	font-weight: bold;
+}
+table.timeline input[name=start] {
+	text-align: right;
+}
+table.timeline input[name=stop] {
+	text-align: left;
+	width: 9%;
+}
+table.timeline input[name=duration] {
+	text-align: center;
+}
+table.timeline input.Action { background-color: green; color: white; }
+table.timeline input.Script { background-color: blue; color: white; }
+table.timeline input.Font { background-color: orange; color: white; }
+table.timeline input.Process { background-color: blue; color: white; }
+table.timeline input.Reprocess { background-color: orange; color: white; }
+td.small { margin: 0; padding: 2px; line-height: 0.5em; }
+td.small input { font-size: 0.5em; margin: 0; }
+</style>
+
+<!-- Timelines Panel -->
+
+<div id="timelinesPanel">
+<table id="tasks" class="timeline">
+	<col class="label" />
+	<col class="data" style="width: 100%;" />
+	<thead>
+		<tr>
+			<th><button type="button">Task</button></th>
+			<th><button type="button">Timeline (ms)</button></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="template">
+			<td class="label">
+				<input readonly class="type" name="type" />
+				<input readonly class="task" name="name" />
+			</td>
+			<td class="data">
+				<input readonly class="duration" name="start" />
+				<input readonly class="duration" name="duration" />
+				<input readonly class="number" name="stop" />
+			</td>
+		</tr>
+	</tbody> 
+</table>
+</div>
+
+<script>
+MathJaxDx.Timelines = (function() {
+
+var $table = $("#timelinesPanel").find("table"),
+	taskUI = new mui.DataTable($table[0]);	
+
+var beginTime, endTime, performance = {};	
+var actionNames = "Config Cookie Styles Jax Extensions PreProcess Process".split(/\s+/);
+var root, script = "MathJax.js";
+
+var signalHandler = function(message) {
+	var now = endTime = Date.now();
+	var m = message.toString().split(/\s+|\s*,\s*/);
+	var task = m[1], ph = m[0];
+	if (actionNames.indexOf(task) >= 0) {
+		if (ph == "Begin") performance[task] = { type: "Action", name: task, begin: now }
+		if (ph == "End") performance[task].end = now;
+	}
+	if (task == "Load") {
+		var url = message.url;
+		var name = url.replace(root + "/", "");
+		if (ph == "Begin") performance[name] = { type: "Script", name: name, url: url, begin: now };
+		if (ph == "End") performance[name].end = now;
+	}
+	if (task == "Font") {
+		var name = message.fontName;
+		if (ph == "Begin") performance[name] = { type: "Font", name: name, url: url, begin: now };
+		if (ph == "End") performance[name].end = now;			
+	}
+}
+
+
+
+var onPageStart = function(context) {
+	beginTime = endTime = Date.now();
+}
+
+var onMathJaxReady = function(context, MathJax) {
+
+root = MathJax.Hub.config.root;
+performance[script] = {
+	type: "Script",
+	name: script,
+	url: root + "/" + script,
+	begin: beginTime,
+	end: Date.now()
+};
+
+// intercept Font loading
+MathJax.Hub.Register.StartupHook("HTML-CSS Jax Ready", function() {
+	var FONT = MathJax.OutputJax["HTML-CSS"].Font;
+	FONT._loadComplete = FONT.loadComplete;
+	FONT.loadComplete = function(font, n, done, status) {
+		MathJax.Hub.Startup.signal.Post({ name: "End Font", fontName: font.directory, toString: function() { return this.name; } });
+		return this._loadComplete(font, n, done, status);
+	}
+	FONT._loadWebFont = FONT.loadWebFont;
+	FONT.loadWebFont = function(font) {
+		MathJax.Hub.Startup.signal.Post({ name: "Begin Font", fontName: font.directory, toString: function() { return this.name; } });
+		return this._loadWebFont(font);
+	}
+});
+
+// intercept Ajax.Load
+MathJax.Ajax._Load = MathJax.Ajax.Load;
+MathJax.Ajax.Load = function(file, callback) {
+	var url = file.JS;
+	var callback = MathJax.Callback(callback);
+	var hook = callback.hook;
+	callback.hook = function() {
+		if (url) MathJax.Hub.Startup.signal.Post({ name: "End Load", url: url, toString: function() { return this.name; } });
+		return hook.apply(this, arguments);
+	}
+	if (url) MathJax.Hub.Startup.signal.Post({ name: "Begin Load", url: url, toString: function() { return this.name; } });
+	return this._Load(file, callback);
+}
+
+
+MathJax.Hub.Startup.signal.Interest(signalHandler);
+MathJax.Hub.signal.Interest(signalHandler);
+
+MathJax.Hub.queue.Push(function() {
+	var totalTime = endTime - beginTime;
+	taskUI.scale = 90 / totalTime;
+	Object.each(performance, function(taskName, t) {
+		var start = t.begin - beginTime, stop = t.end - beginTime, duration = t.end - t.begin;
+		var timeline = "start: " + start + " / duration: " + duration + " / stop: " + stop;
+		taskUI.addRow({
+			type: { value: t.type.charAt(0).toUpperCase(), title: t.type, "class": t.type },
+			name: { value: t.name, title: t.name },
+			start: { value: start, title: timeline },
+			duration: { value: duration, title: timeline, "class": t.type },
+			stop: { value: stop, title: timeline }
+		});
+	});
+});
+
+}
+
+return {
+	onPageStart: onPageStart,
+	onMathJaxReady: onMathJaxReady
+}
+
+})();
+
+</script>
+
+
+<!-- Math Panel -->
+
+<div id="mathPanel">
+<table id="math" class="timeline">
+	<col class="label" style="width: 10em;" />
+	<col class="data" style="width: 10em;" />
+	<col class="data" />
+	<thead>
+		<tr>
+			<th><button type="button">Math</button></th>
+			<th><button type="button">Source</button></th>
+			<th><button type="button">Processing Time (ms)</button></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="template">
+			<td class="label"><input readonly class="task" name="name" /></td>
+			<td class="data"><input readonly name="source" /></td>
+			<td class="data"><input readonly class="duration" name="process" /></td>
+		</tr>
+	</tbody> 
+</table>
+</div>
+
+<script>
+MathJaxDx.Math = (function() {
+
+var $table = $("#mathPanel").find("table"),
+	mathUI = new mui.DataTable($table[0]);
+
+var math = {
+	count: 0,
+	lastTime: 0,
+	maxDuration: 0,
+	samples: []
+}
+
+
+var onMathJaxReady = function(context, MathJax) {
+
+MathJax.Hub.Register.MessageHook("New Math", function(message) {
+	var now = Date.now();
+	var duration = (math.lastTime) ? now - math.lastTime : 0;
+	math.lastTime = now;
+	if (duration > math.maxDuration) math.maxDuration = duration;
+	var data = math.samples[math.count];
+	if (!data) data = math.samples[math.count] = {};
+	math.count++;
+	data.name = message[1];
+	data.source = $("#" + data.name, context.document).text();
+	data.process = duration;
+});
+
+MathJax.Hub.queue.Push(function() {
+	mathUI.scale = 95 / math.maxDuration;
+	Array.forEach(math.samples, function(t) {
+		mathUI.addRow({
+			name: { value: t.name, title: t.title },
+			source: { value: t.source, title: t.source },
+			process: { value: t.process, title: t.process, "class": "Process" }
+		});
+	});
+});
+
+}
+
+return {
+	onMathJaxReady: onMathJaxReady
+}
+
+})();
+
+</script>
+</div>
+
+	
+<script>
+(function() {
+
+// var height = (window.innerHeight || document.documentElement.offsetHeight) - runBox.offsetTop - document.body.offsetTop;
+var $runBox = $("#runbox");
+var height = $(window).height() - $runBox.offset().top;
+$runBox.height(height);
+
+var onclick = function(e) {
+	var href = this.href;
+	var m = href.split("#");
+	if (m[0] !== document.URL) return;
+	var $panel = $("#" + m[1]);
+	$panel.parent().children().addClass("hidden");
+	$panel.removeClass("hidden");
+	
+	var li = this.parentNode;
+	var ul = li.parentNode;
+	$(ul).children().removeClass("selected");
+	$(li).addClass("selected");
+	return false;
+}
+
+$("#tabs a").click(onclick).first().click();
+
+})();
+</script>
+</body>
+<script>
+
+var notify = function(event, context) {
+	var onEvent = "on" + event;
+	var MathJax = context.MathJax;
+	each(MathJaxDx, function(name, module) {
+		if (module[onEvent]) module[onEvent](context, MathJax);
+	});
+}
+
+var Init = function(context) {
+	notify("PageStart", context);
+	var poll = window.setInterval(function() {
+		if (context && context.MathJax) {
+			window.clearInterval(poll);
+			notify("MathJaxReady", context);
+		}
+	}, 25);
+}
+
+</script>
+</html>
+
+</body>
+</html>

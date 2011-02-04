@@ -141,10 +141,7 @@ mui.getOptions(function(key, val) {
 		<input type="text" size="40" name="url" />
 		<input type="submit" name="run" value="Run" />
 	</li>
-	<li><a href="#basicPanel" title="Basic troubleshooting checks">Basic</a></li>
-	<li><a href="#propertiesPanel" title="Complete view of document and MathJax properties">Properties</a></li>
-	<li><a href="#timelinesPanel" title="Timelines for MathJax tasks">Timelines</a></li>
-	<li><a href="#mathPanel" title="Timings for math processing">Math</a></li>
+	<li><a href="#utilsBox">Diagnostics</a></li>
 </ul>
 </form>
 
@@ -163,16 +160,8 @@ form["url"].value = config.url;
 <iframe id="test"></iframe>
 </div>
 
-<div id="basicPanel">
-</div>
-
-<div id="propertiesPanel">
-</div>
-
-<div id="timelinesPanel">
-</div>
-
-<div id="mathPanel">
+<div id="utilsBox">
+<iframe id="utils" src="page-diag-workers.html"></iframe>
 </div>
 
 
@@ -187,6 +176,7 @@ var height = $(window).height() - $runBox.offset().top;
 $runBox.height(height);
 
 $("#test").height(height*0.95);
+$("#utils").height(height*0.95);
 var onclick = function(e) {
 	var href = this.href;
 	var m = href.split("#");
@@ -208,42 +198,18 @@ $("#tabs a").click(onclick).first().click();
 </script>
 </body>
 <script>
-var MathJaxDx = {};
-</script>
-<script src="page-basic.js"></script>
-<script src="page-properties.js"></script>
-<script src="page-timelines.js"></script>
-<script src="page-math.js"></script>
-<script>
-
-MathJaxDx.Basic.init($("#basicPanel")[0]);
-MathJaxDx.Properties.init($("#propertiesPanel")[0]);
-MathJaxDx.Timelines.init($("#timelinesPanel")[0]);
-MathJaxDx.Math.init($("#mathPanel")[0]);
-
-var notify = function(event, context) {
-	var onEvent = "on" + event;
-	var MathJax = context.MathJax;
-	each(MathJaxDx, function(name, module) {
-		if (module[onEvent]) module[onEvent](context, MathJax);
-	});
-}
 
 if (config.run) (function() {
 
+var utils = $("#utils")[0];
+
+utils.onload = function() {
+	
 var test = $("#test")[0], context = test.contentWindow;
-
-notify("PageStart", context);
-
-test.onload = function() { notify("PageLoad", context); }
+utils.contentWindow.Init(context);
 test.src = config.url;
 
-var poll = window.setInterval(function() {
-	if (context.MathJax) {
-		window.clearInterval(poll);
-		notify("MathJaxReady", context);
-	}
-}, 25)
+}
 
 })();
 </script>

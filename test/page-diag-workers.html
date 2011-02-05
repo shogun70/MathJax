@@ -125,6 +125,7 @@ var MathJaxDx = {}; // namespace for diag utils
 <body>
 <ul id="tabs" class="tabs">
 	<li><a href="#basicPanel" title="Basic troubleshooting checks">Basic</a></li>
+	<li><a href="#messagesPanel" title="Message log">Messages</a></li>
 	<li><a href="#propertiesPanel" title="Complete view of document and MathJax properties">Properties</a></li>
 	<li><a href="#timelinesPanel" title="Timelines for MathJax tasks">Timelines</a></li>
 	<li><a href="#mathPanel" title="Timings for math processing">Math</a></li>
@@ -193,6 +194,46 @@ return Basic;
 })();
 </script>
 <script src="page-basic.js">/* MathJaxDx.Basic.checks = [] */</script>
+
+<!-- Messages Panel -->
+
+<div id="messagesPanel">
+<table id="messages">
+	<caption>MathJax Messages</caption>
+	<col style="width: 4em;" />
+	<col />
+	<tbody>
+		<tr class="template"><td></td></tr>
+	</tbody>
+</table>
+</div>
+
+<script>
+
+MathJaxDx.Messages = (function() {	
+
+var $display = $("#messagesPanel"),
+	$tBody = $display.find("tbody"),
+	$template = $tBody.find("tr.template");
+$template.remove().removeClass("template");
+
+var Messages = {
+	
+onMathJaxReady: function(context, MathJax) {
+	MathJax.Message._Set = MathJax.Message.Set;
+	MathJax.Message.Set = function(text, n, clearDelay) {
+		var $row = $template.clone(true);
+		$row.find("td").text(text);
+		$tBody.append($row);
+		return this._Set(text, n, clearDelay);
+	}
+}
+
+}
+
+return Messages;
+})();
+</script>
 
 <!-- Properties Panel -->
 

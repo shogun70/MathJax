@@ -108,6 +108,10 @@ li.error { border: 1px solid; border-left: 6px solid red; }
 <script>
 var mui = MathJaxUI, 
 	extend = Object.extend, each = Object.each, forEach = Array.forEach, eachWord = String.eachWord;
+	
+var queue = function(callback) {
+	$(document.body).queue(callback);
+}
 
 </script>
 
@@ -287,8 +291,8 @@ var fetch = function(fname, callback) {
 var rcStats = {
 	maxTime: 0
 }
-var checkResource = function(res) {
-	var callback = MathJax.Callback(function(rq, t) {
+var checkResource = function(res, next) {
+	var callback = function(rq, t) {
 		var fname = res.name, ext = fname.split(".").pop();
 		var loaded = (rq.status == 200), // TODO will there be other valid status-codes??
 			contentEncoding = rq.getResponseHeader("Content-Encoding"),
@@ -312,34 +316,38 @@ var checkResource = function(res) {
 		if (res.gzip["class"]) results.gzip = "warn";
 		if (res.xdr["class"]) results.xdr = "warn";
 		if (res.total > rcStats.maxTime) rcStats.maxTime = res.total;
-console.log(rq.getAllResponseHeaders())
+	}
+	fetch(res.name, function(rq, t) {
+		callback(rq, t);
+		next();
 	});
-	fetch(res.name, callback);
-	return callback;
 }
 
 resources.forEach(function(res) {
-	MathJax.Hub.queue.Push([checkResource, res]);
+	queue(function(next) { checkResource(res, next); }); 
 });
 
-MathJax.Hub.queue.Push(function() {
+queue(function(next) { 
 	uriTable.scale = 95 / rcStats.maxTime;
 	resources.forEach(function(res) {
 		uriTable.addRow(res);
 	});
+	next();
 });
 
-MathJax.Hub.queue.Push(function() {
+queue(function(next) {
 	ui.postResult("loaded", results.loaded);
 	ui.postResult("gzip", results.gzip);
 	ui.postResult("xdr", results.xdr);
-})
+	next();
+});
+
 })();
 
 var end = function() {
 	ui.updateStatus("Status: Complete");
 }
-if (MathJax) MathJax.Hub.queue.Push(end)
+if (MathJax) queue(end)
 else end();
 </script>
 

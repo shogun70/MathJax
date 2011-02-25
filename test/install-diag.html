@@ -131,7 +131,7 @@ var queue = function(callback) {
 <dl id="messages">
 	<li id="script">
 		<dt><input type="checkbox" readonly /><a href="#">MathJax script loads</a></dt>
-		<dd><small>If the MathJax script doesn't load then no more testing can occur.
+		<dd><small>If the MathJax script doesn't load then probably all other tests will fail.
 		The script file may be corrupted or in an unexpected location.
 		This test-page expects to find the script at <a href="../MathJax.js">../MathJax.js</a>.
 		</small></dd>
@@ -141,22 +141,40 @@ var queue = function(callback) {
 		<dd><small>If MathJax configuration is not successful the script file may be corrupted.
 		</small></dd>
 	</li>
-	<li id="loaded">
-		<dt><input type="checkbox" readonly /><a href="#">All files download successfuly</a></dt>
-		<dd><small>See the <a href="#files">URI Table</a> for specific results.
+	<li id="scripts">
+		<dt><input type="checkbox" readonly /><a href="#">All script files download successfuly</a></dt>
+		<dd><small>See the <a href="#files">URL Table</a> for specific results.
+		</small></dd>
+	</li>
+	<li id="IEfonts">
+		<dt><input type="checkbox" readonly /><a href="#">All IE font-files (.eot) download successfuly</a></dt>
+		<dd><small>See the <a href="#files">URL Table</a> for specific results.
+		</small></dd>
+	</li>
+	<li id="fonts">
+		<dt><input type="checkbox" readonly /><a href="#">All non-IE font-files (.otf, .svg) download successfuly</a></dt>
+		<dd><small>If none of these load this might be due to an IIS server that
+		<a href="http://paulirish.com/2010/font-face-gotchas/">does not have mime-types configured for these files</a>. 
+		See the <a href="#files">URL Table</a> for specific results. 
+		</small></dd>
+	</li>
+	<li id="images">
+		<dt><input type="checkbox" readonly /><a href="#">All image-font files (.png) download successfuly</a></dt>
+		<dd><small>If some of these files do NOT load this may indicate that MathJax installation did not complete. <br />
+		See the <a href="#files">URL Table</a> for specific results. 
 		</small></dd>
 	</li>
 	<li id="gzip">
 		<dt><input type="checkbox" readonly /><a href="#">Scripts and font-files are compressed</a></dt>
 		<dd><small>Javascript files (.js) may be compressed on the server (typically using gzip) to decrease network download time.
-		Font files (.otf, .eot, .svg) may also be compressed. See the <a href="#files">URI Table</a> for specific results. <br />
+		Font files (.otf, .eot, .svg) may also be compressed. See the <a href="#files">URL Table</a> for specific results. <br />
 		</small></dd>
 	</li>
 	<li id="xdr">
 		<dt><input type="checkbox" readonly /><a href="#">Font-files are enabled for cross-domain requests</a></dt>
 		<dd><small>If the MathJax distribution is intended for cross-domain use then font-files need to be served with
 		<code>Access-Control-Allow-Origin: "*"</code> HTTP header. 
-		See the <a href="#files">URI Table</a> for specific results.
+		See the <a href="#files">URL Table</a> for specific results.
 		</small></dd>
 	</li>
 		
@@ -186,7 +204,10 @@ updateStatus: function(msg) {
 var results = {
 	script: "error",
 	config: "error",
-	loaded: "ok",
+	scripts: "ok",
+	IEfonts: "ok",
+	fonts: "ok",
+	images: "ok",
 	gzip: "ok",
 	xdr: "ok"
 }
@@ -217,7 +238,7 @@ ui.postResult("config", results.config);
 </script>
 	
 <table id="files" class="hidden">
-	<caption>URI Table</caption>
+	<caption>URL Table</caption>
 	<col style="width: 20em;" />
 	<col style="width: 4em;" />
 	<col style="width: 4em;" />
@@ -262,7 +283,9 @@ var resources = [
 "fonts/HTML-CSS/TeX/eot/MathJax_Main-Regular.eot",
 "fonts/HTML-CSS/TeX/otf/MathJax_Main-Regular.otf",
 "fonts/HTML-CSS/TeX/svg/MathJax_Main-Regular.svg",
-"fonts/HTML-CSS/TeX/png/Main/Regular/050/0020.png"
+"fonts/HTML-CSS/TeX/png/AMS/Regular/050/0020.png",
+"fonts/HTML-CSS/TeX/png/Main/Regular/050/0020.png",
+"fonts/HTML-CSS/TeX/png/Typewriter/Regular/476/2032.png"
 ].map(function(fname) { return { name: fname }; });
 
 var root = MathJax.Hub.config.root;
@@ -312,7 +335,14 @@ var checkResource = function(res, next) {
 			loading: { value: loading, title: timelineMsg },
 			total: total
 		});
-		if (res.loaded["class"]) results.loaded = "error";
+		if (res.loaded["class"]) {
+			switch (ext) {
+				case "js": results.scripts = "error"; break;
+				case "eot": results.IEfonts = "error"; break;
+				case "otf": case "svg": results.fonts = "error"; break;
+				case "png": results.images = "error"; break;
+			}
+		}
 		if (res.gzip["class"]) results.gzip = "warn";
 		if (res.xdr["class"]) results.xdr = "warn";
 		if (res.total > rcStats.maxTime) rcStats.maxTime = res.total;
@@ -336,7 +366,10 @@ queue(function(next) {
 });
 
 queue(function(next) {
-	ui.postResult("loaded", results.loaded);
+	ui.postResult("scripts", results.scripts);
+	ui.postResult("IEfonts", results.IEfonts);
+	ui.postResult("fonts", results.fonts);
+	ui.postResult("images", results.images);
 	ui.postResult("gzip", results.gzip);
 	ui.postResult("xdr", results.xdr);
 	next();

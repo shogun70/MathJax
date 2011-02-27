@@ -149,6 +149,7 @@ var MathJaxDx = {}; // namespace for diag utils
 
 <script>
 
+// NOTE MathJaxDx.Basic.checks is declared in page-basic.js
 MathJaxDx.Basic = (function() {	
 
 var $display = $("#basicPanel"),
@@ -169,7 +170,8 @@ var runChecks = function(context, MathJax) {
 		Array.forEach(checkGroup.checks, function(check) {
 			var $row = $template.clone(true),
 				$cells = $row.find("th, td");
-			$cells.eq(1).html(check.title);
+			$cells.eq(1).html('<a href="#">' + check.title + '</a><br /><small>' + check.description + '</small>')
+				.find("a").click(function() { $(this).next().next().toggleClass("hidden"); }).click();
 			$cells.eq(0).html('<input type="checkbox" name="check" readonly />')
 				.find("input").each(function() {
 					this.value = check.name;
@@ -255,6 +257,7 @@ return Messages;
 </div>
 
 <script>
+// NOTE MathJaxDx.Properties.settings is declared in page-properties.js
 MathJaxDx.Properties = (function() {
 
 var context;

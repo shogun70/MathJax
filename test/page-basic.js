@@ -6,33 +6,20 @@ checks: [
 	{
 	name: "Script",
 	title: "MathJax loaded successfully",
+	description: "If MathJax doesn't load then the MathJax script might be in an unexpected location or corrupted.",
 	test: function(context, MathJax) { return !!MathJax; }
 	},
 	{
 	name: "Init",
 	title: "MathJax initialization completed",
+	description: "If initialization doesn't complete there may be a configuration error.",
 	test: function(context, MathJax) { return Array.indexOf(MathJax.Hub.Startup.signal.posted, "End Extensions") >= 0; } // FIXME is this correct??
-	}
-]
-},
-{
-name: "Equations",
-title: "Equations",
-checks: [
+	},
 	{
 	name: "Found",
 	title: "Equations were found",
+	description: "If equations are not found there could be a configuration error. ",
 	test: function(context, MathJax) { return MathJax.Hub.getAllJax().length > 0; }
-	},
-	{
-	name: "TeX",
-	title: "TeX Preprocessing enabled",
-	test: function(context, MathJax) { return !!MathJax.Extension.tex2jax; }
-	},
-	{
-	name: "MathML",
-	title: "MathML Preprocessing enabled",
-	test: function(context, MathJax) { return !!MathJax.Extension.mml2jax; }
 	}
 ]
 },
@@ -41,13 +28,15 @@ name: "General",
 title: "General Recommendations",
 checks: [
 	{
-	name: "Quirksmode",
-	title: "Quirks Mode",
-	test: function(context, MathJax) { return (!context.document.compatMode || context.document.compatMode == "BackCompat"); }
+	name: "doctype",
+	title: "Valid DOCTYPE",
+	description: "If a valid DOCTYPE isn't present then the document will be in quirks mode. This doesn't effect MathJax, but is generally not recommended.",
+	test: function(context, MathJax) { return (context.document.compatMode && context.document.compatMode !== "BackCompat"); }
 	},
 	{
 	name: "EmulateIE7",
 	title: "Emulate IE7 meta tag",
+	description: 'This tag is recommended because MathJax is very slow under IE8. See <a href="http://www.mathjax.org/resources/faqs/#ie8-slow">the FAQ</a> for details. ',
 	test: function(context, MathJax) {
 		var elts = context.document.getElementsByTagName("meta"), meta;
 		for (var n=elts.length, i=0; i<n; i++) {

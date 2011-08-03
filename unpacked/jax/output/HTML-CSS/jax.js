@@ -9,6 +9,7 @@
  *  ---------------------------------------------------------------------
  *  
  *  Copyright (c) 2009-2011 Design Science, Inc.
+ *  Copyright (c) 2011 Sean Hogan, http://meekostuff.net
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -343,19 +344,35 @@
       }
 
       // Used in getScales
-      this.HDMspan = this.Element("span",{style: {position:"absolute", "font-size-adjust":"none"}});
-      if (this.msieInlineBlockAlignBug) {
-        this.HDMimg = this.addElement(this.HDMspan,"img",{
-          style:{
-            height:"0px", width:"1px",
-            "max-width":"none", "max-height":"none",
-            border:0, padding:0, margin:0
-          }
-        });
-        try {this.HDMimg.src = "about:blank"} catch(err) {}
-      } else {
-        this.HDMimg = HTMLCSS.createStrut(this.HDMspan,0); this.HDMimg.style.marginRight = "";
+      this.createHDMspan = function() {
+        var HDMimg, HDMspan;
+	HDMspan = this.Element("span",{style: {position:"absolute", "font-size-adjust":"none"}});
+        if (this.msieInlineBlockAlignBug) {
+          HDMimg = this.addElement(HDMspan,"img",{
+            style:{
+              height:"0px", width:"1px",
+              "max-width":"none", "max-height":"none",
+              border:0, padding:0, margin:0
+            }
+          });
+          try {HDMimg.src = "about:blank"} catch(err) {}
+        } else {
+          HDMimg = HTMLCSS.createStrut(HDMspan,0); 
+          HDMimg.style.marginRight = "";
+        }
+	HDMimg.style.height = "1px";
+	return HDMspan;
       }
+
+      this.setHDMwidth = function(HDMspan, width) {
+        HDMspan.firstChild.style.width = width;
+      }
+
+      this.scalesCache = {}; // cache table for getScales
+
+      this.HDMexspan = this.createHDMspan();
+      this.HDMspan = this.createHDMspan();
+      this.HDMspan.className = "MathJax"; this.HDMspan.id = "MathJax_getScales";
 
       // Used for computing factor to fix margin width in MSIE
       this.marginCheck = HTMLCSS.Element("span",null,
@@ -484,22 +501,44 @@
     },
 
     getScales: function (span) {
+      var mult = 60;
+
+      span.parentNode.insertBefore(this.HDMexspan,span);
       span.parentNode.insertBefore(this.HDMspan,span);
-      this.HDMspan.className = ""; this.HDMspan.id = ""; this.HDMspan.style.fontSize = "";
-      this.HDMimg.style.height = "1px"; this.HDMimg.style.width = "60ex";
-      var ex = this.HDMspan.offsetWidth/60;
-      this.HDMspan.className = "MathJax"; this.HDMspan.id = "MathJax_getScales";
-      this.HDMimg.style.width = "60em";
-      var em = this.outerEm = this.HDMspan.offsetWidth/60;
-      this.scale = Math.floor(Math.max(this.config.minScaleAdjust/100,(ex/this.TeX.x_height)/em) * this.config.scale);
-      span.style.fontSize = this.HDMspan.style.fontSize = this.scale+"%";
-      this.em = MML.mbase.prototype.em = this.HDMspan.offsetWidth/60;
-      if (this.operaFontSizeBug && em === this.em && this.scale !== 100) {
-        // Opera 10.61 doesn't seem to process the fontSize setting above, so adjust manually
-        this.em = MML.mbase.prototype.em = em * this.scale/100;
+      this.setHDMwidth(this.HDMexspan, mult + "ex");
+      this.setHDMwidth(this.HDMspan, mult + "em");
+      this.HDMspan.style.fontSize = "";
+      var exMult = this.HDMexspan.offsetWidth,
+          oemMult = this.HDMspan.offsetWidth,
+          scale = Math.floor(Math.max(this.config.minScaleAdjust/100,(exMult/this.TeX.x_height)/oemMult) * this.config.scale),
+          scalesKey = exMult + "," + oemMult,
+          saved = this.scalesCache[scalesKey],
+          emMult, marginScale;
+      if (saved) { emMult = saved[0]; }
+      else {
+        this.HDMspan.style.fontSize = scale+"%";
+        emMult = this.HDMspan.offsetWidth;
       }
+
       span.parentNode.removeChild(this.HDMspan);
-      this.msieMarginScale = this.getMarginScale(span);
+      span.parentNode.removeChild(this.HDMexspan);
+      span.style.fontSize = scale+"%";
+
+      if (saved) { marginScale = saved[1]; }
+      else {
+        marginScale = this.getMarginScale(span);
+        this.scalesCache[scalesKey] = [ emMult, marginScale ];
+      }
+      var oem = oemMult / mult,
+          em = emMult / mult;
+      this.outerEm = oem;
+      this.scale = scale;
+      this.em = MML.mbase.prototype.em = em;
+      if (this.operaFontSizeBug && oem === em && scale !== 100) {
+        // Opera 10.61 doesn't seem to process the fontSize setting above, so adjust manually
+        this.em = MML.mbase.prototype.em = oem * scale/100;
+      }
+      this.msieMarginScale = marginScale;
     },
     getMarginScale: function (span) {return 1},
     getMSIEmarginScale: function (span) {

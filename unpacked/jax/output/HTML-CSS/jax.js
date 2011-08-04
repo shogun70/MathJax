@@ -9,6 +9,7 @@
  *  ---------------------------------------------------------------------
  *  
  *  Copyright (c) 2009-2011 Design Science, Inc.
+ *  Copyright (c) 2011 Sean Hogan, http://meekostuff.net
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -490,6 +491,7 @@
         this.em = MML.mbase.prototype.em = scales.em;
         this.scale = scales.scale;
         this.msieMarginScale = scales.msieMarginScale;
+        span.style.fontSize = this.scale+"%";
         return;
       }
       this._getScales(span);

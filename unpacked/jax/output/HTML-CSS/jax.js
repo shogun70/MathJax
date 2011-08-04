@@ -397,8 +397,8 @@
         frame.appendChild(div);
       }
       script.parentNode.insertBefore(frame,script); var isHidden;
-      try {this.getScales(span); isHidden = (this.em === 0 || String(this.em) === "NaN")} catch (err) {isHidden = true}
-      if (isHidden) {this.hiddenDiv.appendChild(frame); this.getScales(span)}
+      try {this.getScales(span, frame.parentNode); isHidden = (this.em === 0 || String(this.em) === "NaN")} catch (err) {isHidden = true}
+      if (isHidden) {this.hiddenDiv.appendChild(frame); this.getScales(span, frame.parentNode)}
       this.initImg(span);
       this.initHTML(math,span);
       math.setTeXclass();
@@ -483,7 +483,24 @@
       if (span.className.match(/^MathJax/)) {span.parentNode.removeChild(span)}
     },
 
-    getScales: function (span) {
+    getScales: function (span, parent) {
+      var scales = parent.scales;
+      if (scales) {
+        this.outerEm = scales.outerEm;
+        this.em = MML.mbase.prototype.em = scales.em;
+        this.scale = scales.scale;
+        this.msieMarginScale = scales.msieMarginScale;
+        return;
+      }
+      this._getScales(span);
+      parent.scales = {
+        outerEm : this.outerEm,
+        em : this.em,
+        scale : this.scale,
+        msieMarginScale : this.msieMarginScale
+      }
+    }, 
+    _getScales: function(span) {
       span.parentNode.insertBefore(this.HDMspan,span);
       this.HDMspan.className = ""; this.HDMspan.id = ""; this.HDMspan.style.fontSize = "";
       this.HDMimg.style.height = "1px"; this.HDMimg.style.width = "60ex";

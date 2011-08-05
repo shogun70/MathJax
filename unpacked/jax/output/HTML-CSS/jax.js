@@ -519,6 +519,9 @@
       }
     }, 
     _getScales: function(span) {
+      var mult = 60;
+ 
+      span.parentNode.insertBefore(this.HDMexspan,span);
       span.parentNode.insertBefore(this.HDMspan,span);
       this.setHDMwidth(this.HDMexspan, mult + "ex");
       this.setHDMwidth(this.HDMspan, mult + "em");

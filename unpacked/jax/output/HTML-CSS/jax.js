@@ -389,7 +389,7 @@
       });
       var blockMode = (math.Get("display") === "block");
       if (blockMode) {
-        div = frame = this.Element("div",{className:"MathJax_Display", style:{width:"100%", position:"relative"}});
+        div = frame = this.Element("div",{className:"MathJax_Display"});
         div.appendChild(span);
       }
       // (screen readers don't know about role="math" yet, so use "textbox" instead)

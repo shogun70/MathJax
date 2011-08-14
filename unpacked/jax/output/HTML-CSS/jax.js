@@ -187,7 +187,7 @@
     config: {
       styles: {
         ".MathJax": {
-          "display":         "inline",
+          "display":         "inline-block",
           "font-family":     "serif",
           "font-style":      "normal",
           "font-weight":     "normal",
@@ -209,6 +209,7 @@
         ".MathJax_Display": {
           position: "relative",
           display: "block",
+          overflow: "hidden",
           width: "100%"
         },
 

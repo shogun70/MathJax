@@ -187,7 +187,7 @@
     config: {
       styles: {
         ".MathJax": {
-          "display":         "inline",
+          "display":         "inline-block",
           "font-family":     "serif",
           "font-style":      "normal",
           "font-weight":     "normal",

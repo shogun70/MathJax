@@ -533,7 +533,6 @@
           start = this.startMarker;
           if (span.firstChild) {span.insertBefore(start,span.firstChild)}
             else {span.appendChild(start)}
-          start = this.startMarker;
         }
         span.appendChild(this.endMarker);
         W = this.endMarker.offsetLeft - start.offsetLeft;

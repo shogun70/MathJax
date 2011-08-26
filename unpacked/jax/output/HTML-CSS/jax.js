@@ -207,7 +207,6 @@
         },
 
         ".MathJax_Display": {
-          position: "relative",
           display: "block",
           overflow: "hidden",
           width: "100%"

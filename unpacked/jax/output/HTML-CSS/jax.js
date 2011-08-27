@@ -702,10 +702,10 @@
     placeBox: function (span,x,y,noclip) {
       var parent = span.parentNode, bbox = span.bbox, BBOX = parent.bbox;
       if (this.msiePlaceBoxBug) {this.addText(span,this.NBSP)}
-      if (this.imgSpaceBug) {this.addText(span,this.imgSpace)}
       // Place the box
-      var HH = span.offsetHeight/this.em + 1, dx = 0;
-      if (span.noAdjust) {HH -= 1} else {
+      var HH = span.offsetHeight/this.em, dx = 0;
+      if (!span.noAdjust) {
+        HH += 1;
         if (this.msieInlineBlockAlignBug) {
           this.addElement(span,"img",{className:"MathJax_strut",border:0,src:"about:blank",style:{width:0,height:this.Em(HH)}});
         } else {
@@ -1288,7 +1288,6 @@
 	}
 	if (this.href) {span = HTMLCSS.addElement(span,"a",{href:this.href})}
 	span = HTMLCSS.addElement(span,"span",{className: this.type});
-	if (HTMLCSS.imgHeightBug) {span.style.display = "inline-block"}
 	if (this["class"] != null) {span.className += " "+this["class"]}
 	if (this.style) {
 	  span.style.cssText = this.style;
@@ -2171,8 +2170,8 @@
           msieAccentBug: true,
           msieColorBug: true,
           msieColorPositionBug: true,    // needs position:relative to put color behind text
-          msieRelativeWidthBug: quirks,
-          msieMarginWidthBug: true,
+          msieRelativeWidthBug: quirks, // FIXME never used
+          msieMarginWidthBug: true, // FIXME never used
           msiePaddingWidthBug: true,
           msieCharPaddingWidthBug: (isIE8 && !quirks),
           msieBorderWidthBug: quirks,

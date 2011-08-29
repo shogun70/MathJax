@@ -512,7 +512,6 @@
     },
     getHD: function (span) {
       var position = span.style.position;
-      span.style.position = "absolute";
       this.HDimg.style.height = "0px";
       span.appendChild(this.HDspan);
       var HD = {h:span.offsetHeight};
@@ -520,7 +519,6 @@
       HD.d = span.offsetHeight - HD.h; HD.h -= HD.d;
       HD.h /= this.em; HD.d /= this.em;
       span.removeChild(this.HDspan);
-      span.style.position = position;
       return HD;
     },
     getW: function (span) {
@@ -528,7 +526,6 @@
       if ((w < 0 || this.negativeSkipBug) && W >= 0) {
         // IE can't deal with a space at the beginning, so put something else first
         if (this.negativeSkipBug) {
-          var position = span.style.position; span.style.position = "absolute";
           start = this.startMarker;
           if (span.firstChild) {span.insertBefore(start,span.firstChild)}
             else {span.appendChild(start)}
@@ -536,10 +533,7 @@
         span.appendChild(this.endMarker);
         W = this.endMarker.offsetLeft - start.offsetLeft;
         span.removeChild(this.endMarker);
-        if (this.negativeSkipBug) {
-          span.removeChild(start);
-          span.style.position = position;
-        }
+        if (this.negativeSkipBug) {span.removeChild(start);}
       }
       return W/this.em;
     },

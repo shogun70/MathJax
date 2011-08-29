@@ -511,7 +511,6 @@
       return scale;
     },
     getHD: function (span) {
-      var position = span.style.position;
       this.HDimg.style.height = "0px";
       span.appendChild(this.HDspan);
       var HD = {h:span.offsetHeight};

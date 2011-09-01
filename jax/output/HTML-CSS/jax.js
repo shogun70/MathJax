@@ -2,6 +2,7 @@
  *  /MathJax/jax/output/HTML-CSS/jax.js
  *  
  *  Copyright (c) 2010 Design Science, Inc.
+ *  Copyright (c) 2011 Sean Hogan, http://meekostuff.net
  *
  *  Part of the MathJax library.
  *  See http://www.mathjax.org for details.

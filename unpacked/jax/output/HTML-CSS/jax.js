@@ -513,12 +513,11 @@
     getHD: function (span) {
       this.HDimg.style.height = "0px";
       span.appendChild(this.HDspan);
-      var HD = {h:span.offsetHeight};
-      this.HDimg.style.height = HD.h+"px";
-      HD.d = span.offsetHeight - HD.h; HD.h -= HD.d;
-      HD.h /= this.em; HD.d /= this.em;
+      var h0 = span.offsetHeight;
+      this.HDimg.style.height = h0+"px";
+      var h1 = span.offsetHeight, d = h1 - h0, h = h0 - d;
       span.removeChild(this.HDspan);
-      return HD;
+      return { h: h/this.em, d: d/this.em }
     },
     getW: function (span) {
       var W = span.offsetWidth, w = (span.bbox ? span.bbox.w: -1), start = span;

@@ -520,17 +520,20 @@
       return { h: h/this.em, d: d/this.em }
     },
     getW: function (span) {
-      var W = span.offsetWidth, w = (span.bbox ? span.bbox.w: -1), start = span;
-      if ((w < 0 || this.negativeSkipBug) && W >= 0) {
+      var w = (span.bbox ? span.bbox.w: -1), W;
+      if (span.style.width || (w >= 0 && !this.negativeSkipBug)) {
+        W = span.offsetWidth;
+      } else {
         // IE can't deal with a space at the beginning, so put something else first
+        var start = span, end = this.endMarker;
         if (this.negativeSkipBug) {
           start = this.startMarker;
           if (span.firstChild) {span.insertBefore(start,span.firstChild)}
             else {span.appendChild(start)}
         }
-        span.appendChild(this.endMarker);
-        W = this.endMarker.offsetLeft - start.offsetLeft;
-        span.removeChild(this.endMarker);
+        span.appendChild(end);
+        W = end.offsetLeft - start.offsetLeft;
+        span.removeChild(end);
         if (this.negativeSkipBug) {span.removeChild(start);}
       }
       return W/this.em;

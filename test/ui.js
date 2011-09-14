@@ -212,7 +212,7 @@ updateInputValue: function(input, val) {
 		case "boolean": input.checked = val; break;
 		case "number": case "string": input.value = val; break;
 	}
-	if (ClassList(input).contains("duration") && typeof val === "number") input.style.width = this.scale * val +"%";
+	if (ClassList(input).contains("interval") && typeof val === "number") input.style.width = this.scale * val +"%";
 }
 
 })

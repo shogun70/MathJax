@@ -80,8 +80,7 @@ and identify issues with the installation or configuration in a problem page. </
 </dl>
 
 <h2>Page Tests</h2>
-<p>The following page can perform simple diagnostics and performance analysis of a MathJax enabled page. <br >
-This requires the page under test to be in the same domain as the MathJax installation. </p>
+<p>The following tools perform simple diagnostics and performance analysis of a MathJax enabled page. </p>
 
 <dl>
 	<li>
@@ -90,14 +89,21 @@ This requires the page under test to be in the same domain as the MathJax instal
 		Also takes a comprehensive snapshot of browser, window and MathJax configuration
 		which may be posted to a support group for analysis. <br />
 		Provides basic timing charts for a MathJax enabled page. <br />
-		These can give an indication of where a page seems to fail or be slow. </dd>
+		These can give an indication of where a page seems to fail or be slow. 
+This page cannot run the checks if this directory is in a different domain to the page under test. 
+</dd>
+
+
+	<li>
+		<dt><a href="page-diag.js">page-diag.js</a></dt>
+<dd>This script can be dynamically inserted into the document head of a MathJax enabled page to enable the testing functionality provided by page-diag.html.
+</dd>
+	</li>
+<script>
+document.write('<dt><a title="MathJax Diagnostics" href=\'javascript:(function(){var d=document,base="' + document.URL.replace(/[^/]*$/,"") + '",s=d.createElement("script");s.src=base+"page-diag.js";d.getElementsByTagName("head")[0].appendChild(s);})(); void(0);\'>MathJax Diagnostics</a></dt><dd>This javascript bookmarklet performs the dynamic script insertion of page-diag.js. It can be dragged to the bookmarks toolbar to enable the diagnostics on any MathJax enabled page.</dd>');
+</script>
 	</li>
 </dl>
-
-<p>If the MathJax distribution is not in the same domain as the page under test you can download 
-a zip archive - <a href="page-test.zip">page-test.zip</a> - containing the required files.
-This archive can be unpacked in a location where it will be in the same domain as the page. </p>
-
 <h2>Sample Pages</h2>
 <p>There are also several sample pages that demonstrate how to configure and / or program with MathJax. </p>
 

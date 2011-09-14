@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<!-- Copyright (c) 2010 Design Science, Inc. -->
+<!-- Copyright (c) 2010-2011 Design Science, Inc. -->
 <html>
 <head>
 <title>MathJax Installation Diagnostics</title>
@@ -99,9 +99,9 @@ th, td {
 	padding: 0.2em;
 }
 input {	border: none; }
-input.duration { border: 1px solid #aaa; }
-input[name=waiting] { border: none; background-color: gray; color: white; text-align: center; }
-input[name=loading] { border: none; background-color: blue; color: white; text-align: center; }
+input.interval { border: 1px solid #aaa; }
+input.waiting { border: none; background-color: gray; color: white; text-align: center; }
+input.loading { border: none; background-color: blue; color: white; text-align: center; }
 
 td.error { background-color: red; }
 td.warn { background-color: orange; }
@@ -305,7 +305,7 @@ updateStatus: function(msg) {
 			<td align="center"><input type="checkbox" name="loaded" readonly /></td>
 			<td align="center"><input type="checkbox" name="gzip" readonly /></td>
 			<td align="center"><input type="checkbox" name="xdr" readonly /></td>
-			<td align="left"><input class="duration" name="waiting" readonly /><input class="duration" name="loading" readonly /></td>
+			<td align="left"><input class="waiting interval" name="waiting" readonly /><input class="loading interval" name="loading" readonly /></td>
 		</tr>
 	</tbody>
 </table>
@@ -320,7 +320,7 @@ var uriTable = new mui.DataTable(table[0]);
 var fetch = function(fname, callback) {
 	var url = root + "/" + fname + "?" + Date.now();
 	var t = {};
-	var rq = new XMLHttpRequest;
+	var rq = $.ajaxSettings.xhr();
 	rq.onreadystatechange = function() {
 		var now = Date.now();
 		switch(rq.readyState) {

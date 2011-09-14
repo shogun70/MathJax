@@ -1,5 +1,4 @@
-
-MathJaxDx.Properties.settings = {
+var MathJaxPropertiesSettings = {
 	
 document: {
 	URL: "",

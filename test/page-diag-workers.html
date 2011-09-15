@@ -168,15 +168,17 @@ var runChecks = function(context, MathJax) {
 		$template.remove();
 		$titleRow.find("th, td").first().html(checkGroup.title);
 		
-		Array.forEach(checkGroup.checks, function(check) {
-			var fields, result;
+		Array.some(checkGroup.checks, function(check) {
+			var fields, result, stop;
 			if (check.getAll) {
 				fields = check.getAll(context, MathJax);
 				result = fields.result;
+				stop = fields.stop;
 			}
 			else {
 				fields = check;
 				result = check.test(context, MathJax);
+				stop = false;
 			}
 			var $row = $template.clone(true),
 				$cells = $row.find("th, td");
@@ -188,6 +190,7 @@ var runChecks = function(context, MathJax) {
 					this.checked = result;
 				});
 			$tBody.append($row);
+			return stop;
 		});
 	});
 }

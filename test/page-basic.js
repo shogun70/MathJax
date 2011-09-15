@@ -18,8 +18,10 @@ checks: [
 		var scriptLink = mjScript ? 
 			'<a href="' + mjScript.src + '">' + mjScript.src + '</a>'
 			: "NOT PRESENT";
+		var result = this.test(context, MathJax);
 		return {
-			result: this.test(context, MathJax),
+			result: result,
+			stop: !result,
 			name: this.name,
 			title: this.title,
 			description: this.description + 
@@ -34,6 +36,16 @@ checks: [
 	test: function(context, MathJax) { 
 		if (!MathJax) return false; 
 		return Array.indexOf(MathJax.Hub.Startup.signal.posted, "End Extensions") >= 0; // FIXME is this correct??
+	}, 
+	getAll: function(context, MathJax) {
+		var result = this.test(context, MathJax);
+		return {
+			result: result,
+			stop: !result,
+			name: this.name,
+			title: this.title,
+			description: this.description
+		}
 	}
 },
 {

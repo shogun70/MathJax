@@ -13,6 +13,8 @@
 
 all : page-diag-workers.js
 
+page-diag-workers.js : docwriter.js
+
 .html.js : 
 	cat docwriter.js > ${.TARGET}
 	printf '("' >> ${.TARGET}

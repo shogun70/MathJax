@@ -673,7 +673,7 @@ $(window).bind("resize", function(event) {
 	var $runBox = $("#runbox");
 	var height = $(window).height() - $runBox.offset().top;
 	$runBox.height(height);
-});
+}).trigger("resize");;
 
 var onclick = function(e) {
 	var href = this.href;

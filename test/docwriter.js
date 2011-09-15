@@ -12,24 +12,20 @@ when they are dynamically inserted.
 		[].join.call(arguments, "") :
 		arguments[0];
 	var output = input.replace(/src="/gi, 'src="' + base); 
-	if (!("onpropertychange" in script)) {
-		document.open();	
-		document.write(output);
-		document.close();
-		return;
+	if ("onpropertychange" in script) {
+		// don't execute inline scripts (until later)
+		output = [
+			output.replace(/\<script\>/gi, '<script type="text/plain">'),
+			'<script>window.onload = ', runner.toString(), '</script>'
+		].join("");
 	}
 	
-	// don't execute inline scripts (until later)
-	output = output.replace(/\<script\>/gi, '<script type="text/plain">');
-	
-	var runnerText = runner.toString();
 	window.onload = function() {
 		document.open();
-		// the following calls the script runner after a timeout
-		document.write(output + '<script>window.onload = function() { window.setTimeout(' + runnerText + ', 100); }</script>');
+		document.write(output);
 		document.close();
 	}
-	function runner() { 
+	function runner() { window.setTimeout(function() {
 		var head = document.getElementsByTagName("head")[0];
 		var scripts = document.getElementsByTagName("script");
 		for (var n=scripts.length, i=0; i<n; i++) {
@@ -41,6 +37,6 @@ when they are dynamically inserted.
 			oldscript.parentNode.removeChild(oldscript);
 			head.appendChild(newscript);
 		}
-	}
+	}, 100); }
 })
 

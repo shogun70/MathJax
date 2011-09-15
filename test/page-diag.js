@@ -31,7 +31,7 @@ img.src = root + "logo.gif";
 img.title = "Click for MathJax Diagnostics";
 img.width = "100";
 img.height = "20";
-img.style.cssText = "position: fixed; bottom: 0px; right: 10px; background-color: #fff; padding: 0.5em; border: 2px solid #ccc; " +
+img.style.cssText = "position: absolute; position: fixed; bottom: 0px; right: 10px; background-color: #fff; padding: 0.5em; border: 2px solid #ccc; " +
 	"-webkit-border-radius: 4px 4px 0 0; -moz-border-radius: 4px 4px 0 0; border-radius: 4px 4px 0 0;";
 document.body.appendChild(img);
 
@@ -49,7 +49,7 @@ var diagDoc = diagWin.document;
 
 diagDoc.open();
 diagDoc.write('<script src="' + workersURL + '"></script>');
-diagDoc.close(); // seems to be needed to stop the throbber
+diagDoc.close(); 
 
 var poll = window.setInterval(function() {
 	if (!diagWin.Init) return;

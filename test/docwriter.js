@@ -1,4 +1,33 @@
+/*************************************************************
+ *  Copyright (c) 2010-2011 Design Science, Inc.
+ * 
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 /* 
+This javascript snippet facilitates converting a HTML page to JS which is 
+required for cross-domain download.  After stringifying the HTML and prefixing 
+with this snippet the resulting script can be imported into an iframe, 
+probably with:
+	var doc = iframe.contentDocument;
+	doc.open();
+	doc.write('<script src="' + scriptURL + '"></script>');
+	doc.close();
+
+WARN it is assumed that all src href's (for script or img) are relative to the 
+scriptURL, and that all inline scripts have no attributes and are of the form:
+	<script>...</script>
+
 NOTE we have to jump through hoops for IE because it doesn't execute sourced 
 scripts in order when the page is created with document.write(),
 This involves disabling inline scripts until well after window.onload,

@@ -3,6 +3,11 @@
 <head>
 <title>MathJax Diagnostics</title>
 <!-- Copyright (c) 2010-2011 Design Science, Inc. -->
+<!-- 
+This page will be in an iframe.
+Init(context) is called to set the target window (which is presumeably a
+MathJax enabled page). 
+-->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style>
 html {
@@ -15,18 +20,17 @@ html, body {
 	padding: 0;
 	border: none;
 }
-#banner {
-	font-family: arial, sans-serif;
-	font-weight: bolder;
-	color: #aaa;
+h2 {
+	width: 100%;
+	text-align: center;
+	background-color: #eee;
+	border: 2px solid #aaa;
+	margin: 0.1em 0;
 }
-#banner img {
-	height: 25px;
-}
-#banner strong {
-	font-size: larger;
-	margin-left: 0.5em;
-	vertical-align: 0.1em;
+legend { font-weight: bold; }
+dl { 
+	margin: 0; 
+	width: 80ex;
 }
 label {
 	background-color: #eee;
@@ -91,7 +95,7 @@ th { text-align: left; }
 th, td { padding-left: 1em; padding-right: 1em; }
 input[type=text] { width: 20em; }
 
-#runbox {
+#panels {
 	overflow: auto;
 }
 .hidden {
@@ -112,6 +116,46 @@ $(document).delegate("input", "click", function(event) { if (this.readOnly) even
 </script>
 </head>
 <body>
+
+<div id="start">
+
+</div>
+
+<script>
+MathJaxDx.Start = (function() {
+
+return {
+
+onPageStart: function(context, MathJax) {
+	$("#main").addClass("hidden");
+	$("#start").append("<h2>Waiting for MathJax</h2>");
+},
+onPageReady: function(context, MathJax) {
+	var mjScript;
+	Array.some(context.document.getElementsByTagName("script"), function(script) {
+		var success = script.src.match("MathJax.js");
+		if (success) mjScript = script;
+		return success;
+	});
+	var scriptLink = mjScript ?
+		'<a href="' + mjScript.src + '">' + mjScript.src + '</a>'
+		: "NOT PRESENT";
+	$("#start").append('<div style="width: 80ex; padding: 0 0.5em; background-color: yellow; border: 1px solid #aaa; margin: auto; "><p>Although the page has loaded, MathJax has not started. This may be because the MathJax script is in an unexpected location or corrupted. </p><p>The MathJax script for this page is ' + scriptLink + '.</p></div>');
+
+},
+onMathJaxReady: function(context, MathJax) {
+	$("#start").html("<h2>MathJax has started</h2>");
+	$("#start").addClass("hidden");
+	$("#main").removeClass("hidden");
+}
+
+}
+
+})();
+
+</script>
+<div id="main">
+
 <ul id="tabs" class="tabs">
 	<li><a href="#basicPanel" title="Basic troubleshooting checks">Basic</a></li>
 	<li><a href="#messagesPanel" title="Message log">Messages</a></li>
@@ -120,54 +164,41 @@ $(document).delegate("input", "click", function(event) { if (this.readOnly) even
 	<li><a href="#mathPanel" title="Timings for math processing">Math</a></li>
 </ul>
 	
-<div id="runbox">
+<div id="panels">
 
 <!-- Basic Panel -->
 <style type="text/css">
-#basic tbody {
-	border: 1px solid #ccc;
+#basicPanel li { 
+	padding: 0.3em;
+	margin-bottom: -1px;
+	padding-left: 0;
+	margin-left: 0;
+	list-style-type: none;
+	list-style-postion: inside;
 }
-#basic tr, #basic th, #basic td {
-	border: none;
-}
-#basic dl li { list-style-type: none; }
-#basic dl dt { font-weight: bold }
-#basic dl dt, #basic dl dd { display: inline; }
-#basic code { background-color: #ccc; }
+#basicPanel li.ok { border: 1px solid; border-left: 6px solid green; }
+#basicPanel li.warn { border: 1px solid; border-left: 6px solid orange; }
+#basicPanel li.error { border: 1px solid; border-left: 6px solid red; }
+
+#basicPanel .group dl li { list-style-type: none; }
+#basicPanel .group dl dt { font-weight: bold }
+#basicPanel .group dl dt, #basicPanel .group dl dd { display: inline; }
+#basicPanel .group code { background-color: #ccc; }
 </style>
 
 <div id="basicPanel">
-<table id="basic">
-	<caption>Basic troubleshooting checks</caption>
-	<col style="width: 4em;" />
-	<col />
-	<tbody class="template">
-		<tr><th colspan="2" style="white-space: nowrap;"></th></tr>
-		<tr><td></td><td></td></tr>
-	</tbody>
-</table>
+<h2>Basic troubleshooting checks</h2>
 </div>
 
 <script src="page-basic.js">/* MathJaxBasicChecks = [] */</script>
 <script>
 MathJaxDx.Basic = (function() {	
 
-var $display = $("#basicPanel"),
-	$table = $display.find("table"),
-	$tBodyTemplate = $table.find("tbody.template");
-
-$tBodyTemplate.addClass("hidden").removeClass("template");
-
 var runChecks = function(context, MathJax) {
 	Array.forEach(Basic.checks, function(checkGroup) {
-		var $tBody = $tBodyTemplate.clone(true).removeClass("hidden");
-		$table.append($tBody);
-		var $rows = $tBody.find("tr");
-		var $titleRow = $rows.eq(0);
-		var $template = $rows.eq(1);
-		$template.remove();
-		$titleRow.find("th, td").first().html(checkGroup.title);
-		
+		var $group = $('<fieldset><legend>' + checkGroup.title + '</legend></fieldset');
+		var $list = $('<dl class="group"></dl>');
+
 		Array.some(checkGroup.checks, function(check) {
 			var fields, result, stop;
 			if (check.getAll) {
@@ -180,19 +211,26 @@ var runChecks = function(context, MathJax) {
 				result = check.test(context, MathJax);
 				stop = false;
 			}
-			var $row = $template.clone(true),
-				$cells = $row.find("th, td");
-			$cells.eq(1).html('<a href="#">' + fields.title + '</a><br /><small>' + fields.description + '</small>')
-				.find("a").click(function() { $(this).next().next().toggleClass("hidden"); }).click();
-			$cells.eq(0).html('<input type="checkbox" name="check" readonly />')
-				.find("input").each(function() {
-					this.value = fields.name;
-					this.checked = result;
-				});
-			$tBody.append($row);
+			var $item = $('<li name="' + fields.name + '">' +
+			'<dt><input type="checkbox" readonly /><a href="#">' + fields.title + '</a></dt>' + 
+			'<dd><small>' + fields.description + '</small></dd>' + 
+			'</li>');
+			if (result) {
+				$item.addClass("ok");
+				$item.find("dt input").attr("checked", true);
+			}
+			else {
+				$item.addClass(fields.type == "warn" ? "warn" : "error");
+			}
+			$item.appendTo($list);
 			return stop;
 		});
+		$list.appendTo($group);
+		$group.appendTo("#basicPanel");
 	});
+	$("#basicPanel").delegate("dt a", "click", function(e) { 
+		$(this).parent().next().toggleClass("hidden"); return false; 
+	}).find("dt a").click();
 }
 
 var Basic = {
@@ -214,8 +252,8 @@ return Basic;
 <!-- Messages Panel -->
 
 <div id="messagesPanel">
+<h2>MathJax Messages</h2>
 <table id="messages">
-	<caption>MathJax Messages</caption>
 	<tbody>
 		<tr class="template"><td></td></tr>
 	</tbody>
@@ -261,8 +299,8 @@ return Messages;
 
 <div id="propertiesPanel">
 <form action="mailto:" method="post" enctype="text/plain">
+<h2>Document and MathJax properties <button type="submit" title="Construct an email including these properties as content">Send email</button></h2>
 <table id="properties">
-	<caption>Document and MathJax properties <button type="submit" title="Construct an email including these properties as content">Send email</button></caption>
 	<col />
 	<col width="10%" />
 	<col width="20%" />
@@ -667,15 +705,15 @@ return {
 </script>
 </div>
 
+</div>
 	
 <script>
 (function() {
 
-// var height = (window.innerHeight || document.documentElement.offsetHeight) - runBox.offsetTop - document.body.offsetTop;
 $(window).bind("resize", function(event) {
-	var $runBox = $("#runbox");
-	var height = $(window).height() - $runBox.offset().top;
-	$runBox.height(height);
+	var $panels = $("#panels");
+	var height = $(window).height() - $panels.offset().top;
+	$panels.height(height);
 }).trigger("resize");;
 
 var onclick = function(e) {
@@ -708,9 +746,14 @@ var notify = function(event, context) {
 	});
 }
 
+var pageReady = false;
 var Init = function(context) {
 	notify("PageStart", context);
 	var poll = window.setInterval(function() {
+		if (!pageReady && context && context.document.readyState == "complete") {
+			pageReady = true;
+			notify("PageReady", context);
+		}
 		if (context && context.MathJax) {
 			window.clearInterval(poll);
 			notify("MathJaxReady", context);

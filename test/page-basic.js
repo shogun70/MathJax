@@ -1,34 +1,8 @@
 var MathJaxBasicChecks = [
 {
-name: "Startup",
-title: "MathJax Startup",
+name: "Config",
+title: "MathJax Configuration",
 checks: [
-{
-	name: "Script",
-	title: "MathJax loaded successfully",
-	description: "If MathJax doesn't load then the MathJax script might be in an unexpected location or corrupted.",
-	test: function(context, MathJax) { return !!MathJax; },
-	getAll: function(context, MathJax) {
-		var mjScript;
-		Array.some(context.document.getElementsByTagName("script"), function(script) { 
-			var success = script.src.match("MathJax.js");
-			if (success) mjScript = script;
-			return success;
-	 	});
-		var scriptLink = mjScript ? 
-			'<a href="' + mjScript.src + '">' + mjScript.src + '</a>'
-			: "NOT PRESENT";
-		var result = this.test(context, MathJax);
-		return {
-			result: result,
-			stop: !result,
-			name: this.name,
-			title: this.title,
-			description: this.description + 
-				"The MathJax script for this page is " + scriptLink + "."
-		}
-	}
-},
 {
 	name: "Init",
 	title: "MathJax initialization completed",
@@ -37,10 +11,12 @@ checks: [
 		if (!MathJax) return false; 
 		return Array.indexOf(MathJax.Hub.Startup.signal.posted, "End Extensions") >= 0; // FIXME is this correct??
 	}, 
+	type: "error",
 	getAll: function(context, MathJax) {
 		var result = this.test(context, MathJax);
 		return {
 			result: result,
+			type: this.type,
 			stop: !result,
 			name: this.name,
 			title: this.title,
@@ -56,6 +32,7 @@ checks: [
 		if (!MathJax) return false;
 		return MathJax.Hub.getAllJax().length > 0; 
 	},
+	type: "warn",
 	getAll: function(context, MathJax) {
 		var tex2jax = MathJax && MathJax.Extension.tex2jax;
 		var texDelimString = "";
@@ -69,6 +46,7 @@ checks: [
 		}
 		return {
 			result: this.test(context, MathJax),
+			type: this.type,
 			name: this.name,
 			title: this.title,
 			description: this.description + texDelimString
@@ -86,7 +64,8 @@ checks: [
 	name: "doctype",
 	title: "Valid DOCTYPE",
 	description: "If a valid DOCTYPE isn't present then the document will be in quirks mode. This doesn't effect MathJax, but is generally not recommended.",
-	test: function(context, MathJax) { return (context.document.compatMode && context.document.compatMode !== "BackCompat"); }
+	test: function(context, MathJax) { return (context.document.compatMode && context.document.compatMode !== "BackCompat"); },
+	type: "warn"
 },
 {
 	name: "EmulateIE7",
@@ -107,7 +86,8 @@ checks: [
 			if (nodeName !== "title" && nodeName !== "meta") return false;
 		}
 		return true;
-	}
+	},
+	type: "warn"
 }
 ]
 }

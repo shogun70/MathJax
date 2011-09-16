@@ -20,10 +20,15 @@
  */
 
 (function() {
+
+// TODO this script detection could be more robust
 var scripts = document.getElementsByTagName("head")[0]
 	.getElementsByTagName("script"),
-    script = scripts[scripts.length-1],
-    root = script.src.replace(/[^/]*$/, ""),
+    script = scripts[scripts.length-1];
+
+var onload = function() {
+
+    var root = script.src.replace(/[^/]*$/, ""),
     workersURL = root + "page-diag-workers.js",
     height = 300,
     img = document.createElement("img");
@@ -75,6 +80,14 @@ img.onclick = function() {
 		div.style.height = height + "px";
 		iframe.style.height = height + "px";
 	}
+}
+
+}
+
+if (document.readyState == "complete") onload();
+else {
+if (window.addEventListener) window.addEventListener("load", onload, true);
+else window.attachEvent("onload", onload);
 }
 
 })();

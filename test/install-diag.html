@@ -248,7 +248,7 @@ var runChecks = function(resources) {
 	Array.forEach(checks, function(check) {
 		var $item = $('<li id="' + check.name + '">' +
 		'<dt><input type="checkbox" readonly /><a href="#">' + check.title + '</a></dt>' + 
-		'<dd><small>' + check.details + '</small></dd>' +
+		'<dd>' + check.details + '</dd>' +
 		'</li>');
 		var result = check.test(resources);
 		$item.addClass(result);

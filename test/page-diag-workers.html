@@ -213,7 +213,7 @@ var runChecks = function(context, MathJax) {
 			}
 			var $item = $('<li name="' + fields.name + '">' +
 			'<dt><input type="checkbox" readonly /><a href="#">' + fields.title + '</a></dt>' + 
-			'<dd><small>' + fields.description + '</small></dd>' + 
+			'<dd>' + fields.description + '</dd>' + 
 			'</li>');
 			if (result) {
 				$item.addClass("ok");
@@ -253,9 +253,8 @@ return Basic;
 
 <div id="messagesPanel">
 <h2>MathJax Messages</h2>
-<table id="messages">
-	<tbody>
-		<tr class="template"><td></td></tr>
+<table>
+	<tbody id="messages">
 	</tbody>
 </table>
 </div>
@@ -264,15 +263,8 @@ return Basic;
 
 MathJaxDx.Messages = (function() {	
 
-var $display = $("#messagesPanel"),
-	$tBody = $display.find("tbody"),
-	$template = $tBody.find("tr.template");
-$template.remove().removeClass("template");
-
 var addRow = function(text) {
-	var $row = $template.clone(true);
-	$row.find("td").text(text);
-	$tBody.append($row);
+	$("#messages").append('<tr><td>' + text + '</td></tr>');
 }
 
 var Messages = {
@@ -280,7 +272,7 @@ var Messages = {
 onMathJaxReady: function(context, MathJax) {
 	Array.forEach(MathJax.Message.log, function(message, i) { 
 		if (i <= 0) return;
-		addRow(message.text); 
+		addRow(message.text);
 	});
 	MathJax.Message._Set = MathJax.Message.Set;
 	MathJax.Message.Set = function(text, n, clearDelay) {
@@ -300,15 +292,14 @@ return Messages;
 <div id="propertiesPanel">
 <form action="mailto:" method="post" enctype="text/plain">
 <h2>Document and MathJax properties <button type="submit" title="Construct an email including these properties as content">Send email</button></h2>
-<table id="properties">
+<table>
 	<col />
 	<col width="10%" />
 	<col width="20%" />
-	<thead>
+	<thead id="properties">
 		<tr><th>Property Name</th><th>Type</th><th>Value</th></tr>
 	</thead>
 	<tbody>
-		<tr class="template"><td></td><td></td><td></td></tr>
 	</tbody>
 </table>
 </form>
@@ -319,11 +310,6 @@ return Messages;
 MathJaxDx.Properties = (function() {
 
 var context;
-
-var $display = $("#propertiesPanel"),
-	$tBody = $display.find("tbody"),
-	$template = $tBody.find(".template");
-$template.remove().removeClass("template");
 
 var createPropertyDisplay = function(name, sample) {
 	var type, inp = "";
@@ -351,17 +337,9 @@ var createPropertyDisplay = function(name, sample) {
 			inp = '<input type="text" readonly />';
 			break;
 	}
-	var $row = $template.clone(true);
-	$tBody.append($row);
-	var $cells = $row.find("td");
-	var $nameCell = $cells.eq(0);
-	var $typeCell = $cells.eq(1);
-	var $valCell = $cells.eq(2);
-	$nameCell.html(name);
-	$typeCell.html(type);
-	$valCell.html(inp);
-	$valCell.find("input").attr("name", name);
-	return $valCell.find("input")[0];
+	var $row = $('<tr><td>' + name + '</td><td>' + type + '</td><td>' + inp + '</td></tr>');
+	$("#properties").append($row);
+	return $row.find("input")[0];
 }
 
 var showObject = function(object, path) {
@@ -488,8 +466,6 @@ table.timeline input.Script { background-color: blue; color: white; }
 table.timeline input.Font { background-color: orange; color: white; }
 table.timeline input.Process { background-color: blue; color: white; }
 table.timeline input.Reprocess { background-color: orange; color: white; }
-td.small { margin: 0; padding: 2px; line-height: 0.5em; }
-td.small input { font-size: 0.5em; margin: 0; }
 </style>
 
 <!-- Timelines Panel -->

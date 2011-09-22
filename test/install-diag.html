@@ -121,27 +121,31 @@ li.ok { border: 1px solid; border-left: 6px solid green; }
 li.warn { border: 1px solid; border-left: 6px solid orange; }
 li.error { border: 1px solid; border-left: 6px solid red; }
 
+#summary, #messages {
+	width: 80ex;
+}
+#summary li, #messages li {
+	margin: 0;
+	margin-bottom: -1px;
+	padding: 0.3em;
+}
 #summary, #summary li, #messages, #messages li {
 	list-style-type: none;
 	list-style-position: inside;
 	padding-left: 0;
 	margin-left: 0;
 }
-#summary li, #messages li {
-	display: none;
-	width: 80ex;
-	margin: 0;
-	margin-bottom: -1px;
-	padding: 0.3em;
+#messages ul, #messages ul li {
+	list-style-type: disc;
+	list-style-position: outside;
+	padding: 0.1em;
+	padding-left: 0;
 }
+#summary li { display: none; } /* over-ridden when selected */
 #summary li.ok { display: list-item; }
 #summary.error li.ok, #summary.warn li.ok { display: none; }
 #summary.error li.error { display: list-item; }
 #summary.warn li.warn { display: list-item; }
-
-#messages li.ok { display: list-item; }
-#messages li.error { display: list-item; }
-#messages li.warn { display: list-item; }
 
 </style>
 </head>
@@ -166,7 +170,7 @@ var checks = [
 {
 	name: "scripts",
 	title: "Script files download successfully",
-	details: 'See the <a href="#files">URL Table</a> for specific results.',
+	details: '<ul><li>If some of these do not download it may indicate that MathJax installation did not complete. </li><li>If none of these download it may indicate a configuration problem on the server. </li><li>See the <a href="#files">URL Table</a> for specific results.</li></ul>',
 	test: function(resources) {
 		var result = "ok";
 		resources.forEach(function(res) {
@@ -178,7 +182,7 @@ var checks = [
 {
 	name: "IEfonts",
 	title: "IE fonts (.eot) download successfully",
-	details: 'See the <a href="#files">URL Table</a> for specific results.',
+	details: '<ul><li>If some of these do not download it may indicate that MathJax installation did not complete. </li><li>If none of these download it may indicate a configuration problem on the server. </li><li>See the <a href="#files">URL Table</a> for specific results.</li></ul>',
 	test: function(resources) {
 		var result = "ok";
 		resources.forEach(function(res) {
@@ -190,9 +194,9 @@ var checks = [
 {
 	name: "fonts",
 	title: "Non-IE font-files (.otf, .svg) download successfully",
-	details: 'If none of these load this might be due to an IIS server that\
-		<a href="http://paulirish.com/2010/font-face-gotchas/">does not have mime-types configured for these files</a>. \
-		See the <a href="#files">URL Table</a> for specific results. ',
+	details: '<ul><li>If none of these load this might be due to an IIS server that\
+		<a href="http://paulirish.com/2010/font-face-gotchas/">does not have mime-types configured for these files</a>.</li> \
+		<li>See the <a href="#files">URL Table</a> for specific results. </li></ul>',
 	test: function(resources) {
 		var result = "ok";
 		resources.forEach(function(res) {
@@ -204,8 +208,8 @@ var checks = [
 {
 	name: "images",
 	title: "Image-font files (.png) download successfully",
-	details: 'If some of these files do NOT load this may indicate that MathJax installation did not complete. <br />\
-		See the <a href="#files">URL Table</a> for specific results. ',
+	details: '<ul><li>If some of these do NOT load this may indicate that MathJax installation did not complete. </li>\
+		<li>See the <a href="#files">URL Table</a> for specific results. </li></ul>',
 	test: function(resources) {
 		var result = "ok";
 		resources.forEach(function(res) {
@@ -217,9 +221,10 @@ var checks = [
 {
 	name: "gzip",
 	title: "Scripts and font-files are compressed",
-	details: 'Javascript files (.js) may be compressed on the server (typically using gzip) to decrease network download time.\
-		Font files (.otf, .eot, .svg) may also be compressed. \
-		See the <a href="#files">URL Table</a> for specific results. ',
+	details: '<ul><li>Javascript files (.js) may be compressed on the server (typically using gzip) to decrease network download time.\
+		Font files (.otf, .eot, .svg) may also be compressed. </li>\
+		<li>This test may not detect compressed files when run in Internet Explorer or if there is a proxy between the browser and the server. </li>\
+		<li>See the <a href="#files">URL Table</a> for specific results. </li></ul>',
 	test: function(resources) {
 		var result = "ok";
 		resources.forEach(function(res) {
@@ -231,9 +236,9 @@ var checks = [
 {
 	name: "xdr",
 	title: "Font-files are enabled for cross-domain requests",
-	details: 'If the MathJax distribution is intended for cross-domain use then font-files need to be served with\
-		<code>Access-Control-Allow-Origin: "*"</code> HTTP header. \
-		See the <a href="#files">URL Table</a> for specific results.',
+	details: '<ul><li>If the MathJax distribution is intended for cross-domain use then font-files need to be served with\
+		<code>Access-Control-Allow-Origin: "*"</code> HTTP header. </li>\
+		<li>See the <a href="#files">URL Table</a> for specific results.</li></ul>',
 	test: function(resources) {
 		var result = "ok";
 		resources.forEach(function(res) {
